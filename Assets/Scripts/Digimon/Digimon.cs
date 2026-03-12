@@ -17,19 +17,24 @@ public class Digimon : MonoBehaviour
 
     public int Level => level.Level;
 
-    protected virtual void Awake()
+    protected virtual void Awake() { }
+
+    void Start()
     {
+        if (stats == null)
+            Debug.LogError($"{name} não foi inicializado! Chame Initialize().");
+    }
+
+    public virtual void Initialize(DigimonData digimonData)
+    {
+        data = digimonData;
+
         if (data == null)
         {
             Debug.LogError("DigimonData não definido no Digimon!");
             return;
         }
 
-        Initialize();
-    }
-
-    protected virtual void Initialize()
-    {
         stats = new DigimonStats();
 
         level = new DigimonLevel { Level = data.startLevel };

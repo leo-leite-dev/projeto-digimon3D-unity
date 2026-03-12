@@ -2,6 +2,8 @@ using UnityEngine;
 
 public static class ExperienceCalculator
 {
+    public static ExperienceBalance balance;
+
     public static int GetExpToNextLevel(int level)
     {
         return Mathf.RoundToInt(50 * Mathf.Pow(level, 1.4f));
@@ -11,18 +13,28 @@ public static class ExperienceCalculator
     {
         int baseExp = enemy.data.baseExpReward;
 
-        int diff = enemy.level.Level - attacker.level.Level;
+        int diff = enemy.Level - attacker.Level;
 
-        float modifier = 1f;
+        float modifier;
 
-        if (diff >= 5)
-            modifier = 1.5f;
-        else if (diff >= 2)
-            modifier = 1.2f;
-        else if (diff <= -5)
-            modifier = 0.2f;
-        else if (diff <= -2)
-            modifier = 0.5f;
+        if (diff >= 0)
+        {
+            int index = diff;
+
+            if (index >= balance.xpBonusTable.Length)
+                index = balance.xpBonusTable.Length - 1;
+
+            modifier = balance.xpBonusTable[index];
+        }
+        else
+        {
+            int index = Mathf.Abs(diff);
+
+            if (index >= balance.xpPenaltyTable.Length)
+                index = balance.xpPenaltyTable.Length - 1;
+
+            modifier = balance.xpPenaltyTable[index];
+        }
 
         return Mathf.RoundToInt(baseExp * modifier);
     }

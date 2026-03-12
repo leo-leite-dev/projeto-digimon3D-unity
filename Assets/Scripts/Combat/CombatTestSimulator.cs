@@ -4,8 +4,7 @@ public class CombatTestSimulator : MonoBehaviour
 {
     public Digimon attacker;
     public Digimon defender;
-
-    public AttackType attackType = AttackType.Physical;
+    public DigimonSkill skill;
 
     public EnemySpawner enemySpawner;
 
@@ -23,9 +22,9 @@ public class CombatTestSimulator : MonoBehaviour
     [ContextMenu("Simular 100 Combates")]
     public void RunSimulation()
     {
-        if (attacker == null || defender == null)
+        if (attacker == null || defender == null || skill == null)
         {
-            Debug.LogWarning("Attacker ou Defender não definidos!");
+            Debug.LogWarning("Attacker, Defender ou Skill não definidos!");
             return;
         }
 
@@ -38,7 +37,7 @@ public class CombatTestSimulator : MonoBehaviour
 
         for (int i = 0; i < simulations; i++)
         {
-            int damage = CombatCalculator.CalculateDamage(attacker, defender, attackType);
+            int damage = CombatCalculator.CalculateDamage(attacker, defender, skill);
 
             if (damage == 0)
             {
@@ -46,52 +45,23 @@ public class CombatTestSimulator : MonoBehaviour
                 continue;
             }
 
-            if (damage < minDamage)
-                minDamage = damage;
-
-            if (damage > maxDamage)
-                maxDamage = damage;
+            minDamage = Mathf.Min(minDamage, damage);
+            maxDamage = Mathf.Max(maxDamage, damage);
 
             totalDamage += damage;
         }
 
         float average = (float)totalDamage / (simulations - missCount);
 
-        float typeMod = CalculatorMatrix.GetTypeModifier(attacker.Type, defender.Type);
-        float elementMod = CalculatorMatrix.GetElementModifier(attacker.Element, defender.Element);
-
-        string typeRelation =
-            typeMod > 1f ? "VANTAGEM"
-            : typeMod < 1f ? "DESVANTAGEM"
-            : "NEUTRO";
-
-        string elementRelation =
-            elementMod > 1f ? "VANTAGEM"
-            : elementMod < 1f ? "DESVANTAGEM"
-            : "NEUTRO";
-
-        int xpGained = defender.data.baseExpReward;
-
-        attacker.AddExperience(xpGained);
-
         Debug.Log(
             "========== RESULTADO DA SIMULAÇÃO ==========\n"
-                + $"Atacante: {attacker.Name} | Level: {attacker.Level} | Tipo: {attacker.Type} | Elemento: {attacker.Element}\n"
-                + $"Defensor: {defender.Name} | Level: {defender.Level} | Tipo: {defender.Type} | Elemento: {defender.Element}\n\n"
-                + $"Tipo de Ataque: {attackType}\n\n"
-                + $"ATK: {attacker.stats.PhysicalAttack} | DEF: {defender.stats.PhysicalDefense}\n\n"
-                + $"RELACAO DE TIPO: {typeRelation} (x{typeMod})\n"
-                + $"RELACAO ELEMENTAL: {elementRelation} (x{elementMod})\n\n"
+                + $"Skill testada: {skill.skillName}\n\n"
                 + $"Combates simulados: {simulations}\n"
                 + $"MISS: {missCount}\n"
                 + $"Dano mínimo: {minDamage}\n"
                 + $"Dano máximo: {maxDamage}\n"
                 + $"Dano médio: {average}\n"
-                + "=============================================\n\n"
-                + $"XP GAIN\n"
-                + $"{attacker.Name} ganhou {xpGained} XP\n"
-                + $"Level atual: {attacker.Level}\n"
-                + $"XP atual: {attacker.level.Experience}/{attacker.level.ExpToNextLevel}"
+                + "============================================="
         );
     }
 }
