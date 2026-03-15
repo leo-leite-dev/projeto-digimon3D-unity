@@ -1,28 +1,24 @@
 using UnityEngine;
 
-public class Digimon : MonoBehaviour
+public class Digimon : ValidatedMonoBehaviour
 {
     [Header("Data")]
     public DigimonData data;
 
-    public string Name => data.digimonName;
+    public string Name => data != null ? data.digimonName : "Unknown";
     public DigimonType Type => data.type;
     public DigimonStage Stage => data.stage;
     public DigimonElement Element => data.element;
 
     public DigimonAttributes attributes { get; private set; }
     public DigimonStats stats { get; private set; }
-
     public DigimonLevel level { get; private set; }
 
-    public int Level => level.Level;
+    public int Level => level != null ? level.Level : 1;
 
-    protected virtual void Awake() { }
-
-    void Start()
+    protected override void Awake()
     {
-        if (stats == null)
-            Debug.LogError($"{name} não foi inicializado! Chame Initialize().");
+        base.Awake();
     }
 
     public virtual void Initialize(DigimonData digimonData)
@@ -30,13 +26,9 @@ public class Digimon : MonoBehaviour
         data = digimonData;
 
         if (data == null)
-        {
-            Debug.LogError("DigimonData não definido no Digimon!");
             return;
-        }
 
         stats = new DigimonStats();
-
         level = new DigimonLevel { Level = data.startLevel };
 
         RecalculateStats();
@@ -44,19 +36,24 @@ public class Digimon : MonoBehaviour
 
     public void AddExperience(int amount)
     {
+        if (level == null)
+            return;
+
         level.Experience += amount;
 
         while (level.Experience >= level.ExpToNextLevel)
         {
             level.Experience -= level.ExpToNextLevel;
             level.Level++;
-
             ApplyLevelGrowth();
         }
     }
 
     public void ApplyLevelGrowth()
     {
+        if (data == null || level == null || stats == null)
+            return;
+
         RecalculateStats();
 
         Debug.Log(
@@ -91,16 +88,29 @@ public class Digimon : MonoBehaviour
 
     protected void RecalculateStats()
     {
-        attributes = CalculateAttributesForLevel();
+        if (data == null || stats == null || level == null)
+            return;
 
+        attributes = CalculateAttributesForLevel();
         DigimonStatsCalculator.CalculateStats(attributes, stats);
     }
 
     [ContextMenu("Reload From Data")]
     public void ReloadFromData()
     {
-        level.Level = data.startLevel;
+        if (data == null)
+        {
+            Debug.LogError($"ReloadFromData falhou: data nulo em {gameObject.name}", this);
+            return;
+        }
 
+        if (level == null)
+            level = new DigimonLevel();
+
+        if (stats == null)
+            stats = new DigimonStats();
+
+        level.Level = data.startLevel;
         RecalculateStats();
     }
 }

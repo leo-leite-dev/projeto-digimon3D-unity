@@ -1,42 +1,32 @@
 using UnityEngine;
 
-public class PlayerCombatController : MonoBehaviour
+public class PlayerCombatController : ValidatedMonoBehaviour
 {
+    [Header("References")]
+    [SerializeField]
+    private TargetSystem targetSystem;
+
     private DigimonAttack attack;
 
-    public TargetSystem targetSystem;
+    public DigimonAttack CurrentAttack => attack;
 
-    private KeyCode[] skillKeys =
-    {
-        KeyCode.Alpha1,
-        KeyCode.Alpha2,
-        KeyCode.Alpha3,
-        KeyCode.Alpha4,
-        KeyCode.Alpha5,
-        KeyCode.Alpha6,
-        KeyCode.Alpha7,
-        KeyCode.Alpha8,
-    };
-
-    void Awake()
-    {
-        if (targetSystem == null)
-            targetSystem = FindFirstObjectByType<TargetSystem>();
-    }
-
-    void Update()
+    public void UseSkill(DigimonSkill skill)
     {
         if (attack == null)
             return;
 
-        if (targetSystem == null || targetSystem.currentTarget == null)
+        if (skill == null)
             return;
 
-        for (int i = 0; i < skillKeys.Length; i++)
-        {
-            if (Input.GetKeyDown(skillKeys[i]))
-                attack.UseSkill(i, targetSystem.currentTarget);
-        }
+        if (targetSystem == null)
+            return;
+
+        GameObject target = targetSystem.CurrentTarget;
+
+        if (target == null)
+            return;
+
+        attack.TryUseSkill(skill, target);
     }
 
     public void SetDigimon(DigimonAttack newAttack)
@@ -44,11 +34,6 @@ public class PlayerCombatController : MonoBehaviour
         attack = newAttack;
 
         if (attack == null)
-        {
-            Debug.LogWarning("PlayerCombatController: DigimonAttack não configurado.");
             return;
-        }
-
-        Debug.Log($"Digimon equipado para combate: {attack.name}");
     }
 }

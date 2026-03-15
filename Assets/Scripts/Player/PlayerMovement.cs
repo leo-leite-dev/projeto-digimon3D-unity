@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(CharacterController))]
-public class PlayerMovement : MonoBehaviour
+public class PlayerMovement : ValidatedMonoBehaviour
 {
     [Header("References")]
     [SerializeField]
@@ -45,8 +45,10 @@ public class PlayerMovement : MonoBehaviour
 
     private RaycastHit groundHit;
 
-    void Awake()
+    protected override void Awake()
     {
+        base.Awake();
+
         controller = GetComponent<CharacterController>();
 
         input = new PlayerControls();
@@ -56,6 +58,15 @@ public class PlayerMovement : MonoBehaviour
 
         if (cameraTransform == null && Camera.main != null)
             cameraTransform = Camera.main.transform;
+    }
+
+    protected override void Validate()
+    {
+        if (cameraTransform == null)
+            Debug.LogError("[PlayerMovement] Camera Transform not assigned.", this);
+
+        if (animator == null)
+            Debug.LogWarning("[PlayerMovement] Animator not assigned.", this);
     }
 
     void OnEnable()
@@ -79,7 +90,7 @@ public class PlayerMovement : MonoBehaviour
 
     void ReadInput()
     {
-        Vector2 inputVector = input.movement.Move.ReadValue<Vector2>();
+        Vector2 inputVector = input.Movement.Move.ReadValue<Vector2>();
 
         float horizontal = inputVector.x;
         float vertical = inputVector.y;

@@ -3,61 +3,86 @@ using UnityEngine;
 public class DigimonFollow : Digimon
 {
     [Header("References")]
-    public PlayerMovement player;
+    public Transform player;
+    public Transform followPoint;
 
+    private DigimonMovement movement;
     private Animator animator;
-    private DigimonAttack attack;
 
     [SerializeField]
     private Transform modelRoot;
 
     private GameObject currentModel;
 
-    [Header("Leash")]
-    public float leashDistance = 20f;
+    protected override void Validate()
+    {
+        base.Validate();
 
-    [Header("Follow")]
-    public int followDelay = 15;
-    public float speed = 5f;
-    public float stopDistance = 2f;
-    public float rotationSpeed = 10f;
+        if (modelRoot == null)
+        {
+            Transform root = transform.Find("ModelRoot");
 
-    [Header("Catch Up")]
-    public float catchUpDistance = 8f;
-    public float catchUpSpeedMultiplier = 1.8f;
+            if (root != null)
+                modelRoot = root;
+            else
+                Debug.LogError(
+                    $"{nameof(DigimonFollow)}: ModelRoot não encontrado no prefab.",
+                    this
+                );
+        }
+    }
 
     protected override void Awake()
     {
         base.Awake();
 
-        if (player == null)
-        {
-            player = FindFirstObjectByType<PlayerMovement>();
-
-            if (player == null)
-                Debug.LogWarning("DigimonFollow: PlayerMovement não encontrado.");
-        }
-
+        movement = GetComponent<DigimonMovement>();
         animator = GetComponentInChildren<Animator>();
-        attack = GetComponentInChildren<DigimonAttack>();
+
+        if (movement == null)
+            Debug.LogError($"{nameof(DigimonFollow)}: DigimonMovement não encontrado.", this);
+    }
+
+    public void Initialize(Transform playerRef, Transform followPointRef)
+    {
+        player = playerRef;
+        followPoint = followPointRef;
     }
 
     void Update()
     {
-        if (data == null || player == null)
+        if (data == null)
             return;
 
-        if (attack != null && attack.IsAttacking)
-        {
-            CheckLeash();
+        if (player == null || followPoint == null)
             return;
-        }
 
         FollowPlayer();
+        UpdateAnimation();
+    }
+
+    void FollowPlayer()
+    {
+        if (movement == null)
+            return;
+
+        movement.FollowTarget(followPoint);
     }
 
     public void SpawnModel(GameObject prefab)
     {
+        if (prefab == null)
+        {
+            Debug.LogError($"{nameof(DigimonFollow)}: prefab do modelo é null.", this);
+            return;
+        }
+
+        if (modelRoot == null)
+        {
+            Debug.LogError($"{nameof(DigimonFollow)}: ModelRoot não definido.", this);
+            return;
+        }
+
         if (currentModel != null)
             Destroy(currentModel);
 
@@ -67,101 +92,25 @@ public class DigimonFollow : Digimon
         currentModel.transform.localRotation = Quaternion.identity;
 
         animator = currentModel.GetComponentInChildren<Animator>();
-    }
 
-    void FollowPlayer()
-    {
-        Vector3 playerPos = player.transform.position;
+        SkillEffectSpawner spawner = GetComponent<SkillEffectSpawner>();
+        if (spawner != null)
+            spawner.RefreshFirePoint();
 
-        float sqrDistance = (transform.position - playerPos).sqrMagnitude;
-
-        if (sqrDistance > catchUpDistance * catchUpDistance)
-        {
-            MoveTo(playerPos, speed * catchUpSpeedMultiplier);
-            return;
-        }
-
-        bool playerMoving = player.IsMoving;
-
-        if (playerMoving)
-        {
-            Vector3[] history = player.PositionHistory;
-
-            if (history.Length <= followDelay)
-            {
-                UpdateAnimation(0f);
-                return;
-            }
-
-            if (sqrDistance <= stopDistance * stopDistance)
-            {
-                UpdateAnimation(0f);
-                return;
-            }
-
-            Vector3 targetPosition = history[followDelay];
-
-            MoveTo(targetPosition, speed);
-        }
-        else
-        {
-            Vector3 targetPosition = playerPos - player.transform.forward * stopDistance;
-
-            float sqrDist = (transform.position - targetPosition).sqrMagnitude;
-
-            if (sqrDist > 0.01f)
-                MoveTo(targetPosition, speed);
-            else
-                UpdateAnimation(0f);
-        }
-    }
-
-    void MoveTo(Vector3 target, float moveSpeed)
-    {
-        Vector3 direction = target - transform.position;
-
-        if (direction.sqrMagnitude < 0.001f)
-            return;
-
-        direction.Normalize();
-
-        transform.position = Vector3.MoveTowards(
-            transform.position,
-            target,
-            moveSpeed * Time.deltaTime
-        );
-
-        Rotate(direction);
-        UpdateAnimation(moveSpeed);
-    }
-
-    void Rotate(Vector3 direction)
-    {
-        Quaternion targetRotation = Quaternion.LookRotation(direction);
-
-        transform.rotation = Quaternion.Slerp(
-            transform.rotation,
-            targetRotation,
-            rotationSpeed * Time.deltaTime
-        );
-    }
-
-    void CheckLeash()
-    {
-        float sqrDistance = (transform.position - player.transform.position).sqrMagnitude;
-
-        if (sqrDistance > leashDistance * leashDistance)
-        {
-            if (attack.targetSystem != null)
-                attack.targetSystem.currentTarget = null;
-        }
-    }
-
-    void UpdateAnimation(float moveSpeed)
-    {
         if (animator == null)
+        {
+            Debug.LogWarning($"{nameof(DigimonFollow)}: Animator não encontrado no modelo.", this);
+            return;
+        }
+    }
+
+    void UpdateAnimation()
+    {
+        if (animator == null || movement == null)
             return;
 
-        animator.SetFloat("Speed", moveSpeed);
+        float speed = movement.Velocity.magnitude;
+
+        animator.SetFloat("Speed", speed);
     }
 }

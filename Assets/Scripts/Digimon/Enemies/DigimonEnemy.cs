@@ -7,12 +7,35 @@ public class DigimonEnemy : Digimon
     [Header("Model")]
     public Transform modelRoot;
 
+    [Header("Target")]
+    [SerializeField]
+    private Transform targetPoint;
+    public Transform TargetPoint => targetPoint;
+
     private GameObject currentModel;
+
+    protected override void Awake()
+    {
+        FindTargetPointIfNeeded();
+        base.Awake();
+    }
+
+    void FindTargetPointIfNeeded()
+    {
+        if (targetPoint != null)
+            return;
+
+        Transform found = transform.Find("Target");
+
+        if (found != null)
+            targetPoint = found;
+    }
 
     public override void Initialize(DigimonData data)
     {
         base.Initialize(data);
 
+        FindTargetPointIfNeeded();
         SpawnModel();
     }
 
@@ -34,5 +57,18 @@ public class DigimonEnemy : Digimon
 
         if (wander != null)
             wander.animator = animator;
+    }
+
+    public void OnSkillEffectReached(DigimonAttack ownerAttack)
+    {
+        Debug.Log($"{name} -> skill chegou no alvo");
+
+        if (ownerAttack == null)
+        {
+            Debug.LogWarning($"{name} -> ownerAttack veio null");
+            return;
+        }
+
+        ownerAttack.FinishSkill();
     }
 }

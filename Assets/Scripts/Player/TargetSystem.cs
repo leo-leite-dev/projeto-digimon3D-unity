@@ -1,15 +1,28 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TargetSystem : MonoBehaviour
+public class TargetSystem : ValidatedMonoBehaviour
 {
-    public float targetRange = 15f;
-    public Transform playerCamera;
+    [Header("Targeting")]
+    [SerializeField]
+    private float targetRange = 15f;
 
-    private List<GameObject> enemiesInRange = new List<GameObject>();
+    [SerializeField]
+    private Transform player;
+
+    private readonly List<GameObject> enemiesInRange = new();
     private int currentIndex = -1;
 
-    public GameObject currentTarget;
+    public GameObject CurrentTarget { get; private set; }
+
+    protected override void Validate()
+    {
+        if (player == null)
+        {
+            player = transform;
+            Debug.LogWarning("[TargetSystem] Player Transform not assigned. Using self.", this);
+        }
+    }
 
     void Update()
     {
@@ -67,8 +80,8 @@ public class TargetSystem : MonoBehaviour
         enemiesInRange.Sort(
             (a, b) =>
             {
-                float distA = Vector3.Distance(playerCamera.position, a.transform.position);
-                float distB = Vector3.Distance(playerCamera.position, b.transform.position);
+                float distA = (player.position - a.transform.position).sqrMagnitude;
+                float distB = (player.position - b.transform.position).sqrMagnitude;
 
                 return distA.CompareTo(distB);
             }
@@ -95,44 +108,44 @@ public class TargetSystem : MonoBehaviour
 
     void SetTarget(GameObject target)
     {
-        if (currentTarget != null)
+        if (CurrentTarget != null)
         {
-            TargetIndicator oldIndicator = currentTarget.GetComponentInParent<TargetIndicator>();
+            TargetIndicator oldIndicator = CurrentTarget.GetComponentInParent<TargetIndicator>();
 
             if (oldIndicator != null)
                 oldIndicator.SetActive(false);
         }
 
-        currentTarget = target;
+        CurrentTarget = target;
 
-        if (currentTarget != null)
+        if (CurrentTarget != null)
         {
-            TargetIndicator newIndicator = currentTarget.GetComponentInParent<TargetIndicator>();
+            TargetIndicator newIndicator = CurrentTarget.GetComponentInParent<TargetIndicator>();
 
             if (newIndicator != null)
                 newIndicator.SetActive(true);
         }
     }
 
-    void ClearTarget()
+    public void ClearTarget()
     {
-        if (currentTarget != null)
+        if (CurrentTarget != null)
         {
-            TargetIndicator indicator = currentTarget.GetComponentInParent<TargetIndicator>();
+            TargetIndicator indicator = CurrentTarget.GetComponentInParent<TargetIndicator>();
 
             if (indicator != null)
                 indicator.SetActive(false);
         }
 
-        currentTarget = null;
+        CurrentTarget = null;
     }
 
     void ValidateTargetDistance()
     {
-        if (currentTarget == null)
+        if (CurrentTarget == null)
             return;
 
-        float sqrDistance = (currentTarget.transform.position - transform.position).sqrMagnitude;
+        float sqrDistance = (CurrentTarget.transform.position - transform.position).sqrMagnitude;
 
         if (sqrDistance > targetRange * targetRange)
             ClearTarget();

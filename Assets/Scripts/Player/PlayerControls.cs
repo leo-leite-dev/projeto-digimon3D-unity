@@ -89,7 +89,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     ""name"": ""PlayerControls"",
     ""maps"": [
         {
-            ""name"": ""movement"",
+            ""name"": ""Movement"",
             ""id"": ""143c1467-dc95-4780-8337-25c158a076be"",
             ""actions"": [
                 {
@@ -159,18 +159,274 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": true
                 }
             ]
+        },
+        {
+            ""name"": ""Combat"",
+            ""id"": ""1848a5e9-610c-4b9d-9aee-81c00cfc8327"",
+            ""actions"": [
+                {
+                    ""name"": ""Skill1"",
+                    ""type"": ""Button"",
+                    ""id"": ""e131fece-f786-4b4b-b564-a3ad313903c6"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Skill2"",
+                    ""type"": ""Button"",
+                    ""id"": ""71711c96-a5c6-4a45-9203-c3d4b9f32241"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Skill3"",
+                    ""type"": ""Button"",
+                    ""id"": ""411e4b1c-df8e-4768-8280-38997087d163"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Skill4"",
+                    ""type"": ""Button"",
+                    ""id"": ""717521a2-142b-4328-b362-32c09b337f1e"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Skill5"",
+                    ""type"": ""Button"",
+                    ""id"": ""10597224-871e-49f1-9bd6-638ff9ae2545"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Skill6"",
+                    ""type"": ""Button"",
+                    ""id"": ""c0c14b54-d38a-43d2-9dad-37607186a460"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Skill7"",
+                    ""type"": ""Button"",
+                    ""id"": ""04cc95d4-9ae6-4c6d-98d4-23add04e7756"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Skill8"",
+                    ""type"": ""Button"",
+                    ""id"": ""1683f811-9f0d-4954-8de2-44fcb88eef09"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""8b34795b-334d-406a-bd0f-4369fafc072d"",
+                    ""path"": ""<Keyboard>/1"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Skill1"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""46ea44fc-4958-4b09-946f-1632a87a8449"",
+                    ""path"": """",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Skill2"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""997f6860-6bc4-4dab-a079-b9a19087d697"",
+                    ""path"": ""<Keyboard>/2"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Skill2"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""97de844f-6d1d-4a84-8bd1-c8462f88db8b"",
+                    ""path"": """",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Skill3"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""23a92faf-95c7-41cc-b8db-b869eed116a1"",
+                    ""path"": ""<Keyboard>/3"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Skill3"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""57db078d-329a-41d6-b4be-7922752f08b4"",
+                    ""path"": """",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Skill4"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""be962055-74b6-4944-84ef-62a1437e4aa7"",
+                    ""path"": ""<Keyboard>/4"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Skill4"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""1ab50e00-4b42-40a0-a6df-12ddc2bef85a"",
+                    ""path"": """",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Skill5"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b65682bd-ceea-4e52-bcf8-fa74178e84a3"",
+                    ""path"": ""<Keyboard>/5"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Skill5"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""3263655b-7e79-4b3b-9aec-5e97d8f721fa"",
+                    ""path"": """",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Skill6"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c55fdfee-032e-4dc0-a990-9558b4c57473"",
+                    ""path"": ""<Keyboard>/6"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Skill6"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""3fbced34-6ee2-48f4-afc2-ea021439e272"",
+                    ""path"": """",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Skill7"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""0d9f4e2a-ad60-42d1-9eda-88609a6e2cc0"",
+                    ""path"": ""<Keyboard>/7"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Skill7"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""fbfa3b99-6eeb-44dc-8d00-be093a1bb7ea"",
+                    ""path"": """",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Skill8"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""994b234e-7ef9-454e-8768-06a63aaabd72"",
+                    ""path"": ""<Keyboard>/8"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Skill8"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": []
 }");
-        // movement
-        m_movement = asset.FindActionMap("movement", throwIfNotFound: true);
-        m_movement_Move = m_movement.FindAction("Move", throwIfNotFound: true);
+        // Movement
+        m_Movement = asset.FindActionMap("Movement", throwIfNotFound: true);
+        m_Movement_Move = m_Movement.FindAction("Move", throwIfNotFound: true);
+        // Combat
+        m_Combat = asset.FindActionMap("Combat", throwIfNotFound: true);
+        m_Combat_Skill1 = m_Combat.FindAction("Skill1", throwIfNotFound: true);
+        m_Combat_Skill2 = m_Combat.FindAction("Skill2", throwIfNotFound: true);
+        m_Combat_Skill3 = m_Combat.FindAction("Skill3", throwIfNotFound: true);
+        m_Combat_Skill4 = m_Combat.FindAction("Skill4", throwIfNotFound: true);
+        m_Combat_Skill5 = m_Combat.FindAction("Skill5", throwIfNotFound: true);
+        m_Combat_Skill6 = m_Combat.FindAction("Skill6", throwIfNotFound: true);
+        m_Combat_Skill7 = m_Combat.FindAction("Skill7", throwIfNotFound: true);
+        m_Combat_Skill8 = m_Combat.FindAction("Skill8", throwIfNotFound: true);
     }
 
     ~@PlayerControls()
     {
-        UnityEngine.Debug.Assert(!m_movement.enabled, "This will cause a leak and performance issues, PlayerControls.movement.Disable() has not been called.");
+        UnityEngine.Debug.Assert(!m_Movement.enabled, "This will cause a leak and performance issues, PlayerControls.Movement.Disable() has not been called.");
+        UnityEngine.Debug.Assert(!m_Combat.enabled, "This will cause a leak and performance issues, PlayerControls.Combat.Disable() has not been called.");
     }
 
     /// <summary>
@@ -243,12 +499,12 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         return asset.FindBinding(bindingMask, out action);
     }
 
-    // movement
-    private readonly InputActionMap m_movement;
+    // Movement
+    private readonly InputActionMap m_Movement;
     private List<IMovementActions> m_MovementActionsCallbackInterfaces = new List<IMovementActions>();
-    private readonly InputAction m_movement_Move;
+    private readonly InputAction m_Movement_Move;
     /// <summary>
-    /// Provides access to input actions defined in input action map "movement".
+    /// Provides access to input actions defined in input action map "Movement".
     /// </summary>
     public struct MovementActions
     {
@@ -259,13 +515,13 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// </summary>
         public MovementActions(@PlayerControls wrapper) { m_Wrapper = wrapper; }
         /// <summary>
-        /// Provides access to the underlying input action "movement/Move".
+        /// Provides access to the underlying input action "Movement/Move".
         /// </summary>
-        public InputAction @Move => m_Wrapper.m_movement_Move;
+        public InputAction @Move => m_Wrapper.m_Movement_Move;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
-        public InputActionMap Get() { return m_Wrapper.m_movement; }
+        public InputActionMap Get() { return m_Wrapper.m_Movement; }
         /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Enable()" />
         public void Enable() { Get().Enable(); }
         /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Disable()" />
@@ -337,9 +593,182 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     /// <summary>
     /// Provides a new <see cref="MovementActions" /> instance referencing this action map.
     /// </summary>
-    public MovementActions @movement => new MovementActions(this);
+    public MovementActions @Movement => new MovementActions(this);
+
+    // Combat
+    private readonly InputActionMap m_Combat;
+    private List<ICombatActions> m_CombatActionsCallbackInterfaces = new List<ICombatActions>();
+    private readonly InputAction m_Combat_Skill1;
+    private readonly InputAction m_Combat_Skill2;
+    private readonly InputAction m_Combat_Skill3;
+    private readonly InputAction m_Combat_Skill4;
+    private readonly InputAction m_Combat_Skill5;
+    private readonly InputAction m_Combat_Skill6;
+    private readonly InputAction m_Combat_Skill7;
+    private readonly InputAction m_Combat_Skill8;
     /// <summary>
-    /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "movement" which allows adding and removing callbacks.
+    /// Provides access to input actions defined in input action map "Combat".
+    /// </summary>
+    public struct CombatActions
+    {
+        private @PlayerControls m_Wrapper;
+
+        /// <summary>
+        /// Construct a new instance of the input action map wrapper class.
+        /// </summary>
+        public CombatActions(@PlayerControls wrapper) { m_Wrapper = wrapper; }
+        /// <summary>
+        /// Provides access to the underlying input action "Combat/Skill1".
+        /// </summary>
+        public InputAction @Skill1 => m_Wrapper.m_Combat_Skill1;
+        /// <summary>
+        /// Provides access to the underlying input action "Combat/Skill2".
+        /// </summary>
+        public InputAction @Skill2 => m_Wrapper.m_Combat_Skill2;
+        /// <summary>
+        /// Provides access to the underlying input action "Combat/Skill3".
+        /// </summary>
+        public InputAction @Skill3 => m_Wrapper.m_Combat_Skill3;
+        /// <summary>
+        /// Provides access to the underlying input action "Combat/Skill4".
+        /// </summary>
+        public InputAction @Skill4 => m_Wrapper.m_Combat_Skill4;
+        /// <summary>
+        /// Provides access to the underlying input action "Combat/Skill5".
+        /// </summary>
+        public InputAction @Skill5 => m_Wrapper.m_Combat_Skill5;
+        /// <summary>
+        /// Provides access to the underlying input action "Combat/Skill6".
+        /// </summary>
+        public InputAction @Skill6 => m_Wrapper.m_Combat_Skill6;
+        /// <summary>
+        /// Provides access to the underlying input action "Combat/Skill7".
+        /// </summary>
+        public InputAction @Skill7 => m_Wrapper.m_Combat_Skill7;
+        /// <summary>
+        /// Provides access to the underlying input action "Combat/Skill8".
+        /// </summary>
+        public InputAction @Skill8 => m_Wrapper.m_Combat_Skill8;
+        /// <summary>
+        /// Provides access to the underlying input action map instance.
+        /// </summary>
+        public InputActionMap Get() { return m_Wrapper.m_Combat; }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Enable()" />
+        public void Enable() { Get().Enable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Disable()" />
+        public void Disable() { Get().Disable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.enabled" />
+        public bool enabled => Get().enabled;
+        /// <summary>
+        /// Implicitly converts an <see ref="CombatActions" /> to an <see ref="InputActionMap" /> instance.
+        /// </summary>
+        public static implicit operator InputActionMap(CombatActions set) { return set.Get(); }
+        /// <summary>
+        /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <param name="instance">Callback instance.</param>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
+        /// </remarks>
+        /// <seealso cref="CombatActions" />
+        public void AddCallbacks(ICombatActions instance)
+        {
+            if (instance == null || m_Wrapper.m_CombatActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_CombatActionsCallbackInterfaces.Add(instance);
+            @Skill1.started += instance.OnSkill1;
+            @Skill1.performed += instance.OnSkill1;
+            @Skill1.canceled += instance.OnSkill1;
+            @Skill2.started += instance.OnSkill2;
+            @Skill2.performed += instance.OnSkill2;
+            @Skill2.canceled += instance.OnSkill2;
+            @Skill3.started += instance.OnSkill3;
+            @Skill3.performed += instance.OnSkill3;
+            @Skill3.canceled += instance.OnSkill3;
+            @Skill4.started += instance.OnSkill4;
+            @Skill4.performed += instance.OnSkill4;
+            @Skill4.canceled += instance.OnSkill4;
+            @Skill5.started += instance.OnSkill5;
+            @Skill5.performed += instance.OnSkill5;
+            @Skill5.canceled += instance.OnSkill5;
+            @Skill6.started += instance.OnSkill6;
+            @Skill6.performed += instance.OnSkill6;
+            @Skill6.canceled += instance.OnSkill6;
+            @Skill7.started += instance.OnSkill7;
+            @Skill7.performed += instance.OnSkill7;
+            @Skill7.canceled += instance.OnSkill7;
+            @Skill8.started += instance.OnSkill8;
+            @Skill8.performed += instance.OnSkill8;
+            @Skill8.canceled += instance.OnSkill8;
+        }
+
+        /// <summary>
+        /// Removes <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <remarks>
+        /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
+        /// </remarks>
+        /// <seealso cref="CombatActions" />
+        private void UnregisterCallbacks(ICombatActions instance)
+        {
+            @Skill1.started -= instance.OnSkill1;
+            @Skill1.performed -= instance.OnSkill1;
+            @Skill1.canceled -= instance.OnSkill1;
+            @Skill2.started -= instance.OnSkill2;
+            @Skill2.performed -= instance.OnSkill2;
+            @Skill2.canceled -= instance.OnSkill2;
+            @Skill3.started -= instance.OnSkill3;
+            @Skill3.performed -= instance.OnSkill3;
+            @Skill3.canceled -= instance.OnSkill3;
+            @Skill4.started -= instance.OnSkill4;
+            @Skill4.performed -= instance.OnSkill4;
+            @Skill4.canceled -= instance.OnSkill4;
+            @Skill5.started -= instance.OnSkill5;
+            @Skill5.performed -= instance.OnSkill5;
+            @Skill5.canceled -= instance.OnSkill5;
+            @Skill6.started -= instance.OnSkill6;
+            @Skill6.performed -= instance.OnSkill6;
+            @Skill6.canceled -= instance.OnSkill6;
+            @Skill7.started -= instance.OnSkill7;
+            @Skill7.performed -= instance.OnSkill7;
+            @Skill7.canceled -= instance.OnSkill7;
+            @Skill8.started -= instance.OnSkill8;
+            @Skill8.performed -= instance.OnSkill8;
+            @Skill8.canceled -= instance.OnSkill8;
+        }
+
+        /// <summary>
+        /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="CombatActions.UnregisterCallbacks(ICombatActions)" />.
+        /// </summary>
+        /// <seealso cref="CombatActions.UnregisterCallbacks(ICombatActions)" />
+        public void RemoveCallbacks(ICombatActions instance)
+        {
+            if (m_Wrapper.m_CombatActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        /// <summary>
+        /// Replaces all existing callback instances and previously registered input action callbacks associated with them with callbacks provided via <param cref="instance" />.
+        /// </summary>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
+        /// </remarks>
+        /// <seealso cref="CombatActions.AddCallbacks(ICombatActions)" />
+        /// <seealso cref="CombatActions.RemoveCallbacks(ICombatActions)" />
+        /// <seealso cref="CombatActions.UnregisterCallbacks(ICombatActions)" />
+        public void SetCallbacks(ICombatActions instance)
+        {
+            foreach (var item in m_Wrapper.m_CombatActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_CombatActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    /// <summary>
+    /// Provides a new <see cref="CombatActions" /> instance referencing this action map.
+    /// </summary>
+    public CombatActions @Combat => new CombatActions(this);
+    /// <summary>
+    /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Movement" which allows adding and removing callbacks.
     /// </summary>
     /// <seealso cref="MovementActions.AddCallbacks(IMovementActions)" />
     /// <seealso cref="MovementActions.RemoveCallbacks(IMovementActions)" />
@@ -352,5 +781,69 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnMove(InputAction.CallbackContext context);
+    }
+    /// <summary>
+    /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Combat" which allows adding and removing callbacks.
+    /// </summary>
+    /// <seealso cref="CombatActions.AddCallbacks(ICombatActions)" />
+    /// <seealso cref="CombatActions.RemoveCallbacks(ICombatActions)" />
+    public interface ICombatActions
+    {
+        /// <summary>
+        /// Method invoked when associated input action "Skill1" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnSkill1(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Skill2" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnSkill2(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Skill3" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnSkill3(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Skill4" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnSkill4(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Skill5" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnSkill5(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Skill6" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnSkill6(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Skill7" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnSkill7(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Skill8" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnSkill8(InputAction.CallbackContext context);
     }
 }
