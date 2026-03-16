@@ -6,34 +6,36 @@ public class PlayerCombatController : ValidatedMonoBehaviour
     [SerializeField]
     private TargetSystem targetSystem;
 
-    private DigimonAttack attack;
+    private DigimonFollow currentDigimon;
+    public DigimonFollow CurrentDigimon => currentDigimon;
 
-    public DigimonAttack CurrentAttack => attack;
+    protected override void Validate()
+    {
+        if (targetSystem == null)
+            targetSystem = GetComponent<TargetSystem>();
+    }
 
     public void UseSkill(DigimonSkill skill)
     {
-        if (attack == null)
+        if (skill == null)
             return;
 
-        if (skill == null)
+        if (currentDigimon == null)
             return;
 
         if (targetSystem == null)
             return;
 
-        GameObject target = targetSystem.CurrentTarget;
+        GameObject target = targetSystem.GetCurrentTarget();
 
         if (target == null)
             return;
 
-        attack.TryUseSkill(skill, target);
+        currentDigimon.RequestSkillUse(skill, target);
     }
 
-    public void SetDigimon(DigimonAttack newAttack)
+    public void SetDigimon(DigimonFollow digimon)
     {
-        attack = newAttack;
-
-        if (attack == null)
-            return;
+        currentDigimon = digimon;
     }
 }

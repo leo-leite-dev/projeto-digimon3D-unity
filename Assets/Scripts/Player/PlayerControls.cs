@@ -235,6 +235,24 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""NextTarget"",
+                    ""type"": ""Button"",
+                    ""id"": ""6724a5b9-329e-4e6e-a076-f7ec925c67f0"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ClickTarget"",
+                    ""type"": ""Button"",
+                    ""id"": ""142e5f5d-8550-412c-9157-e4073fe95d5e"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -402,6 +420,28 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""action"": ""Skill8"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c467d05a-2882-4901-a3be-82e8de81ef1c"",
+                    ""path"": ""<Keyboard>/tab"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""NextTarget"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""6f0c67c6-9016-480e-99e7-a4558b607c1c"",
+                    ""path"": """",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ClickTarget"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -421,6 +461,8 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_Combat_Skill6 = m_Combat.FindAction("Skill6", throwIfNotFound: true);
         m_Combat_Skill7 = m_Combat.FindAction("Skill7", throwIfNotFound: true);
         m_Combat_Skill8 = m_Combat.FindAction("Skill8", throwIfNotFound: true);
+        m_Combat_NextTarget = m_Combat.FindAction("NextTarget", throwIfNotFound: true);
+        m_Combat_ClickTarget = m_Combat.FindAction("ClickTarget", throwIfNotFound: true);
     }
 
     ~@PlayerControls()
@@ -606,6 +648,8 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Combat_Skill6;
     private readonly InputAction m_Combat_Skill7;
     private readonly InputAction m_Combat_Skill8;
+    private readonly InputAction m_Combat_NextTarget;
+    private readonly InputAction m_Combat_ClickTarget;
     /// <summary>
     /// Provides access to input actions defined in input action map "Combat".
     /// </summary>
@@ -649,6 +693,14 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Combat/Skill8".
         /// </summary>
         public InputAction @Skill8 => m_Wrapper.m_Combat_Skill8;
+        /// <summary>
+        /// Provides access to the underlying input action "Combat/NextTarget".
+        /// </summary>
+        public InputAction @NextTarget => m_Wrapper.m_Combat_NextTarget;
+        /// <summary>
+        /// Provides access to the underlying input action "Combat/ClickTarget".
+        /// </summary>
+        public InputAction @ClickTarget => m_Wrapper.m_Combat_ClickTarget;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -699,6 +751,12 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Skill8.started += instance.OnSkill8;
             @Skill8.performed += instance.OnSkill8;
             @Skill8.canceled += instance.OnSkill8;
+            @NextTarget.started += instance.OnNextTarget;
+            @NextTarget.performed += instance.OnNextTarget;
+            @NextTarget.canceled += instance.OnNextTarget;
+            @ClickTarget.started += instance.OnClickTarget;
+            @ClickTarget.performed += instance.OnClickTarget;
+            @ClickTarget.canceled += instance.OnClickTarget;
         }
 
         /// <summary>
@@ -734,6 +792,12 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Skill8.started -= instance.OnSkill8;
             @Skill8.performed -= instance.OnSkill8;
             @Skill8.canceled -= instance.OnSkill8;
+            @NextTarget.started -= instance.OnNextTarget;
+            @NextTarget.performed -= instance.OnNextTarget;
+            @NextTarget.canceled -= instance.OnNextTarget;
+            @ClickTarget.started -= instance.OnClickTarget;
+            @ClickTarget.performed -= instance.OnClickTarget;
+            @ClickTarget.canceled -= instance.OnClickTarget;
         }
 
         /// <summary>
@@ -845,5 +909,19 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnSkill8(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "NextTarget" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnNextTarget(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "ClickTarget" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnClickTarget(InputAction.CallbackContext context);
     }
 }

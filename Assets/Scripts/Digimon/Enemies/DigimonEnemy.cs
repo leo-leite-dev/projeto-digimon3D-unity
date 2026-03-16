@@ -56,7 +56,7 @@ public class DigimonEnemy : Digimon
         EnemyWander wander = GetComponent<EnemyWander>();
 
         if (wander != null)
-            wander.animator = animator;
+            wander.AssignAnimator(animator);
     }
 
     public void OnSkillEffectReached(DigimonAttack ownerAttack)
@@ -64,10 +64,7 @@ public class DigimonEnemy : Digimon
         Debug.Log($"{name} -> skill chegou no alvo");
 
         if (ownerAttack == null)
-        {
-            Debug.LogWarning($"{name} -> ownerAttack veio null");
             return;
-        }
 
         ownerAttack.FinishSkill();
     }

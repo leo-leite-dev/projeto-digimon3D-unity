@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -15,6 +16,8 @@ public class TargetSystem : ValidatedMonoBehaviour
 
     public GameObject CurrentTarget { get; private set; }
 
+    public event Action<GameObject, GameObject> OnTargetChanged;
+
     protected override void Validate()
     {
         if (player == null)
@@ -24,18 +27,32 @@ public class TargetSystem : ValidatedMonoBehaviour
         }
     }
 
-    void Update()
+    private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Tab))
-            CycleTarget();
-
-        if (Input.GetMouseButtonDown(0))
-            ClickTarget();
-
-        ValidateTargetDistance();
+        ValidateCurrentTarget();
     }
 
-    void CycleTarget()
+    public GameObject GetCurrentTarget()
+    {
+        if (!IsTargetValid(CurrentTarget))
+        {
+            ClearTarget();
+            return null;
+        }
+
+        return CurrentTarget;
+    }
+
+    public bool IsTargetValid(GameObject target)
+    {
+        if (target == null)
+            return false;
+
+        float sqrDistance = (target.transform.position - player.position).sqrMagnitude;
+        return sqrDistance <= targetRange * targetRange;
+    }
+
+    public void CycleTarget()
     {
         UpdateEnemyList();
 
@@ -53,101 +70,83 @@ public class TargetSystem : ValidatedMonoBehaviour
         SetTarget(enemiesInRange[currentIndex]);
     }
 
-    void UpdateEnemyList()
+    public bool TrySetTarget(GameObject target)
+    {
+        if (!IsTargetValid(target))
+            return false;
+
+        SetTarget(target);
+        return true;
+    }
+
+    private void SetTarget(GameObject target)
+    {
+        if (CurrentTarget == target)
+            return;
+
+        GameObject previousTarget = CurrentTarget;
+        CurrentTarget = target;
+
+        currentIndex = enemiesInRange.IndexOf(target);
+
+        OnTargetChanged?.Invoke(previousTarget, CurrentTarget);
+    }
+
+    public void ClearTarget()
+    {
+        if (CurrentTarget == null && currentIndex == -1)
+            return;
+
+        GameObject previousTarget = CurrentTarget;
+
+        CurrentTarget = null;
+        currentIndex = -1;
+
+        OnTargetChanged?.Invoke(previousTarget, null);
+    }
+
+    private void ValidateCurrentTarget()
+    {
+        if (CurrentTarget == null)
+            return;
+
+        if (!IsTargetValid(CurrentTarget))
+            ClearTarget();
+    }
+
+    private void UpdateEnemyList()
     {
         enemiesInRange.Clear();
 
-        Collider[] hits = Physics.OverlapSphere(transform.position, targetRange);
+        Collider[] hits = Physics.OverlapSphere(player.position, targetRange);
+        HashSet<GameObject> uniqueEnemies = new();
 
         foreach (Collider hit in hits)
         {
             if (!hit.CompareTag("Enemy"))
                 continue;
 
-            Vector3 direction = (hit.transform.position - transform.position).normalized;
-
-            float dot = Vector3.Dot(transform.forward, direction);
-
-            if (dot < 0)
-                continue;
-
             GameObject enemyRoot = hit.transform.root.gameObject;
-
-            if (!enemiesInRange.Contains(enemyRoot))
-                enemiesInRange.Add(enemyRoot);
+            uniqueEnemies.Add(enemyRoot);
         }
+
+        enemiesInRange.AddRange(uniqueEnemies);
 
         enemiesInRange.Sort(
             (a, b) =>
             {
                 float distA = (player.position - a.transform.position).sqrMagnitude;
                 float distB = (player.position - b.transform.position).sqrMagnitude;
-
                 return distA.CompareTo(distB);
             }
         );
     }
 
-    void ClickTarget()
+    private void OnDrawGizmosSelected()
     {
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        Transform center = player != null ? player : transform;
 
-        if (Physics.Raycast(ray, out RaycastHit hit))
-        {
-            if (!hit.collider.CompareTag("Enemy"))
-                return;
-
-            GameObject enemy = hit.collider.transform.root.gameObject;
-
-            float sqrDistance = (enemy.transform.position - transform.position).sqrMagnitude;
-
-            if (sqrDistance <= targetRange * targetRange)
-                SetTarget(enemy);
-        }
-    }
-
-    void SetTarget(GameObject target)
-    {
-        if (CurrentTarget != null)
-        {
-            TargetIndicator oldIndicator = CurrentTarget.GetComponentInParent<TargetIndicator>();
-
-            if (oldIndicator != null)
-                oldIndicator.SetActive(false);
-        }
-
-        CurrentTarget = target;
-
-        if (CurrentTarget != null)
-        {
-            TargetIndicator newIndicator = CurrentTarget.GetComponentInParent<TargetIndicator>();
-
-            if (newIndicator != null)
-                newIndicator.SetActive(true);
-        }
-    }
-
-    public void ClearTarget()
-    {
-        if (CurrentTarget != null)
-        {
-            TargetIndicator indicator = CurrentTarget.GetComponentInParent<TargetIndicator>();
-
-            if (indicator != null)
-                indicator.SetActive(false);
-        }
-
-        CurrentTarget = null;
-    }
-
-    void ValidateTargetDistance()
-    {
-        if (CurrentTarget == null)
-            return;
-
-        float sqrDistance = (CurrentTarget.transform.position - transform.position).sqrMagnitude;
-
-        if (sqrDistance > targetRange * targetRange)
-            ClearTarget();
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(center.position, targetRange);
     }
 }

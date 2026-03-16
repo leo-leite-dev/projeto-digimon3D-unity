@@ -13,7 +13,7 @@ public class HotbarController : MonoBehaviour
     [SerializeField]
     private HotbarSlot[] slots = new HotbarSlot[8];
 
-    void Awake()
+    private void Awake()
     {
         if (combatController == null)
             TryGetComponent(out combatController);
@@ -24,7 +24,7 @@ public class HotbarController : MonoBehaviour
         ValidateSlots();
     }
 
-    void ValidateSlots()
+    private void ValidateSlots()
     {
         if (slots == null || slots.Length == 0)
             slots = new HotbarSlot[8];
@@ -55,17 +55,17 @@ public class HotbarController : MonoBehaviour
         }
     }
 
-    void UseDigimonSkill(int index)
+    private void UseDigimonSkill(int index)
     {
         if (combatController == null)
             return;
 
-        DigimonAttack attack = combatController.CurrentAttack;
+        DigimonFollow currentDigimon = combatController.CurrentDigimon;
 
-        if (attack == null)
+        if (currentDigimon == null || currentDigimon.data == null)
             return;
 
-        var skills = attack.Digimon.data.skills;
+        var skills = currentDigimon.data.skills;
 
         if (skills == null || skills.Count == 0)
             return;
@@ -75,10 +75,13 @@ public class HotbarController : MonoBehaviour
 
         DigimonSkill skill = skills[index];
 
+        if (skill == null)
+            return;
+
         combatController.UseSkill(skill);
     }
 
-    void UseItem(HotbarSlot slot)
+    private void UseItem(HotbarSlot slot)
     {
         if (inventoryController == null)
             return;

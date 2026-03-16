@@ -9,11 +9,21 @@ public class EnemyWander : MonoBehaviour
     [HideInInspector]
     public EnemySpawner spawner;
 
-    public Animator animator;
+    [Header("References")]
+    [SerializeField]
+    private DigimonMovement movement;
 
-    public float waitTime = 2f;
+    [SerializeField]
+    private Animator animator;
+    public Animator Animator => animator;
 
-    private NavMeshAgent agent;
+    [Header("Wander")]
+    [SerializeField]
+    private float waitTime = 2f;
+
+    [SerializeField]
+    private float samplePositionRadius = 5f;
+
     private float waitTimer;
 
     private bool isChasing;
@@ -22,7 +32,8 @@ public class EnemyWander : MonoBehaviour
 
     void Awake()
     {
-        agent = GetComponent<NavMeshAgent>();
+        if (movement == null)
+            movement = GetComponent<DigimonMovement>();
 
         if (animator == null)
             animator = GetComponentInChildren<Animator>();
@@ -34,6 +45,11 @@ public class EnemyWander : MonoBehaviour
         ChooseNewTarget();
     }
 
+    public void AssignAnimator(Animator value)
+    {
+        animator = value;
+    }
+
     public void Initialize(WanderArea area, EnemySpawner enemySpawner)
     {
         wanderArea = area;
@@ -42,7 +58,7 @@ public class EnemyWander : MonoBehaviour
 
     void Update()
     {
-        if (agent == null)
+        if (movement == null)
             return;
 
         if (isChasing)
@@ -55,10 +71,15 @@ public class EnemyWander : MonoBehaviour
         if (wanderArea == null)
             return;
 
-        if (agent.pathPending)
+        if (movement.PathPending)
+        {
+            UpdateAnimatorSpeed();
             return;
+        }
 
-        if (agent.remainingDistance <= agent.stoppingDistance)
+        bool isWaitingAtDestination = movement.HasReachedDestination() || movement.IsIdle();
+
+        if (isWaitingAtDestination)
         {
             waitTimer -= Time.deltaTime;
 
@@ -90,69 +111,74 @@ public class EnemyWander : MonoBehaviour
             return;
         }
 
-        if (!agent.pathPending)
-            agent.SetDestination(chaseTarget.position);
+        movement.SetDestination(chaseTarget.position);
     }
 
     void UpdateAnimatorSpeed()
     {
-        if (animator != null)
-        {
-            float speed = agent.velocity.magnitude;
-            animator.SetFloat("Speed", speed);
-        }
+        if (animator == null || movement == null)
+            return;
+
+        animator.SetFloat("Speed", movement.Velocity.magnitude);
     }
 
     void ChooseNewTarget()
     {
-        if (wanderArea == null)
+        if (wanderArea == null || movement == null)
             return;
 
         Vector3 randomPos = wanderArea.GetRandomPosition();
 
-        NavMeshHit hit;
-
-        if (NavMesh.SamplePosition(randomPos, out hit, 5f, NavMesh.AllAreas))
-            agent.SetDestination(hit.position);
+        if (
+            NavMesh.SamplePosition(
+                randomPos,
+                out NavMeshHit hit,
+                samplePositionRadius,
+                NavMesh.AllAreas
+            )
+        )
+            movement.SetDestination(hit.position);
 
         waitTimer = waitTime;
     }
 
     public void ChaseTarget(Transform target, float duration)
     {
-        if (target == null || agent == null)
+        if (target == null || movement == null)
             return;
+
+        CancelInvoke(nameof(ResumeWander));
 
         isChasing = true;
         chaseTarget = target;
         chaseTimer = duration;
         waitTimer = waitTime;
 
-        agent.isStopped = false;
-        agent.SetDestination(target.position);
+        movement.ResumeMovement();
+        movement.SetDestination(target.position);
     }
 
     public void StopAndPause(float duration)
     {
-        if (agent == null)
+        if (movement == null)
             return;
+
+        CancelInvoke(nameof(ResumeWander));
 
         isChasing = false;
         chaseTarget = null;
         chaseTimer = 0f;
 
-        agent.ResetPath();
-        agent.isStopped = true;
-
+        movement.StopMovement();
         Invoke(nameof(ResumeWander), duration);
     }
 
     void ResumeWander()
     {
-        if (agent == null)
+        if (movement == null)
             return;
 
-        agent.isStopped = false;
+        movement.ResumeMovement();
         waitTimer = waitTime;
         ChooseNewTarget();
     }
