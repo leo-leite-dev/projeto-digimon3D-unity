@@ -159,9 +159,13 @@ public class PlayerDigidex : ValidatedMonoBehaviour
             return;
         }
 
-        currentDigimonFollow.data = equippedDigimon;
+        currentDigimonFollow.Setup(equippedDigimon);
         currentDigimonFollow.Initialize(transform, followPoint);
         currentDigimonFollow.SpawnModel(equippedDigimon.modelPrefab);
+
+        DigimonReferences references = currentDigimonObject.GetComponent<DigimonReferences>();
+        if (references != null)
+            references.RefreshVisualReferences();
 
         RegisterCombatDigimon(currentDigimonFollow);
     }

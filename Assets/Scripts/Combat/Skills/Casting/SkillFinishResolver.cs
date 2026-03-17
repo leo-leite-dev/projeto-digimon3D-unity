@@ -17,12 +17,6 @@ public class SkillFinishResolver
         if (!executionState.IsCasting)
             return;
 
-        if (executionState.CurrentSkill == null)
-            return;
-
-        if (executionState.CurrentSkill.finishMode != SkillFinishMode.EffectImpact)
-            return;
-
         castOrchestrator.Finish();
     }
 }

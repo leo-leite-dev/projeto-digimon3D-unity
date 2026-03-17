@@ -20,6 +20,7 @@ public class SkillExecutionState
     public void SetEffect(SkillEffect effect)
     {
         CurrentEffect = effect;
+
         if (effect != null)
             HasSpawnedEffectForCurrentSkill = true;
     }

@@ -26,7 +26,7 @@ public class DigimonSkill : ScriptableObject
     public float projectileSpeed = 10f;
 
     [Header("Effect Timing")]
-    public float hitDelay = 0f;
+    public float damageDelay = 0f;
     public float lifeTime = 2f;
 
     [Header("Finish")]

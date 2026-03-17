@@ -62,10 +62,10 @@ public class HotbarController : MonoBehaviour
 
         DigimonFollow currentDigimon = combatController.CurrentDigimon;
 
-        if (currentDigimon == null || currentDigimon.data == null)
+        if (currentDigimon == null || currentDigimon.Data == null)
             return;
 
-        var skills = currentDigimon.data.skills;
+        var skills = currentDigimon.Data.skills;
 
         if (skills == null || skills.Count == 0)
             return;

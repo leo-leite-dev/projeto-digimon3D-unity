@@ -30,7 +30,7 @@ public class SkillUsageValidator
         if (executionState.IsCasting)
             return SkillUseCheckResult.AlreadyCasting;
 
-        if (digimon == null || digimon.data == null)
+        if (digimon == null || digimon.Data == null)
             return SkillUseCheckResult.MissingDigimonData;
 
         if (cooldownTracker.IsOnCooldown(skill))

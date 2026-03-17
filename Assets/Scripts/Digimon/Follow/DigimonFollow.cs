@@ -87,7 +87,7 @@ public class DigimonFollow : Digimon
 
     private void Update()
     {
-        if (data == null)
+        if (Data == null)
             return;
 
         if (player == null || followPoint == null)
@@ -250,34 +250,45 @@ public class DigimonFollow : Digimon
         if (currentModel != null)
             Destroy(currentModel);
 
+        // 🔹 Instancia modelo
         currentModel = Instantiate(prefab, modelRoot);
         currentModel.transform.localPosition = Vector3.zero;
         currentModel.transform.localRotation = Quaternion.identity;
 
+        // 🔹 Pega Animator do modelo
         animator = currentModel.GetComponentInChildren<Animator>(true);
 
-        SkillEffectSpawner spawner = GetComponent<SkillEffectSpawner>();
-        if (spawner != null)
-            spawner.RefreshFirePoint();
-
         if (animator == null)
-            Debug.LogWarning($"{nameof(DigimonFollow)}: Animator não encontrado no modelo.", this);
-
-        DigimonReferences references = GetComponent<DigimonReferences>();
-        if (references != null)
         {
-            references.RefreshReferences();
-            Debug.Log("[DigimonFollow] References atualizadas após SpawnModel.", this);
+            Debug.LogWarning($"{nameof(DigimonFollow)}: Animator não encontrado no modelo.", this);
+        }
+
+        // 🔥 PROXY PARA ANIMATION EVENTS (SEM SUJAR PREFAB)
+        var proxy = currentModel.GetComponent<DigimonAnimationEventProxy>();
+
+        if (proxy == null)
+        {
+            proxy = currentModel.AddComponent<DigimonAnimationEventProxy>();
+            Debug.Log("[DigimonFollow] Proxy de AnimationEvent adicionado ao modelo.");
+        }
+
+        // 🔹 Pega DigimonAnimator do ROOT (lógica continua centralizada)
+        var rootAnimator = GetComponent<DigimonAnimator>();
+
+        if (rootAnimator == null)
+        {
+            Debug.LogError("[DigimonFollow] DigimonAnimator não encontrado no root.", this);
         }
         else
         {
-            Debug.LogWarning(
-                "[DigimonFollow] DigimonReferences não encontrado após SpawnModel.",
-                this
-            );
+            proxy.Initialize(rootAnimator);
         }
 
-        DigimonAttackSceneBinder attackSceneBinder = GetComponent<DigimonAttackSceneBinder>();
+        // 🔹 Atualiza referências visuais
+        var references = GetComponent<DigimonReferences>();
+
+        // 🔥 RECOMPÕE SISTEMA (agora com proxy + animator corretos)
+        var attackSceneBinder = GetComponent<DigimonAttackSceneBinder>();
 
         if (attackSceneBinder == null)
             attackSceneBinder = GetComponentInParent<DigimonAttackSceneBinder>();

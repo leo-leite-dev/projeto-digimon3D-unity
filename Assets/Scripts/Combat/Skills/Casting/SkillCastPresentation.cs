@@ -3,9 +3,9 @@ using UnityEngine;
 public class SkillCastPresentation
 {
     private readonly DigimonMovement movement;
-    private readonly DigimonSkillAnimator animator;
+    private readonly DigimonAnimator animator;
 
-    public SkillCastPresentation(DigimonMovement movement, DigimonSkillAnimator animator)
+    public SkillCastPresentation(DigimonMovement movement, DigimonAnimator animator)
     {
         this.movement = movement;
         this.animator = animator;
@@ -16,11 +16,13 @@ public class SkillCastPresentation
         if (movement != null)
         {
             movement.AddMovementLock();
+
             if (target != null)
                 movement.RotateToTarget(target.transform);
         }
+
         if (animator != null)
-            animator.PlaySkill(skill?.skillName);
+            animator.PlaySkill(skill);
     }
 
     public void EndCast()

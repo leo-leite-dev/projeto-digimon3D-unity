@@ -3,12 +3,16 @@ using UnityEngine;
 public class Digimon : ValidatedMonoBehaviour
 {
     [Header("Data")]
-    public DigimonData data;
+    [SerializeField]
+    private DigimonData data;
+
+    public DigimonData Data => data;
 
     public string Name => data != null ? data.digimonName : "Unknown";
-    public DigimonType Type => data.type;
-    public DigimonStage Stage => data.stage;
-    public DigimonElement Element => data.element;
+
+    public DigimonType Type => data != null ? data.type : default;
+    public DigimonStage Stage => data != null ? data.stage : default;
+    public DigimonElement Element => data != null ? data.element : default;
 
     public DigimonAttributes attributes { get; private set; }
     public DigimonStats stats { get; private set; }
@@ -21,15 +25,17 @@ public class Digimon : ValidatedMonoBehaviour
         base.Awake();
     }
 
-    public virtual void Initialize(DigimonData digimonData)
+    public virtual void Setup(DigimonData digimonData)
     {
         data = digimonData;
 
         if (data == null)
             return;
 
-        stats = new DigimonStats();
-        level = new DigimonLevel { Level = data.startLevel };
+        stats ??= new DigimonStats();
+        level ??= new DigimonLevel();
+
+        level.Level = data.startLevel;
 
         RecalculateStats();
     }
