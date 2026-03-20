@@ -8,9 +8,10 @@ public class DigimonAnimator : MonoBehaviour
     public event Action OnApplyHit;
     public event Action OnFinishSkill;
 
-    [SerializeField]
-    private DigimonReferences references;
+    private Animator animator;
+    private bool isInitialized = false;
 
+    [Header("Triggers")]
     [SerializeField]
     private string damageTrigger = "damage";
 
@@ -20,35 +21,33 @@ public class DigimonAnimator : MonoBehaviour
     [SerializeField]
     private string defaultSkillTrigger = "skill";
 
-    private Animator Animator => references != null ? references.Animator : null;
+    [Header("Parameters")]
+    [SerializeField]
+    private string speedParam = "Speed";
 
-    private void Reset()
+    public void Inject(Animator animator)
     {
-        AutoBind();
+        this.animator = animator;
+
+        if (this.animator == null)
+        {
+            Debug.LogError("❌ DigimonAnimator → Animator não injetado", this);
+            return;
+        }
+
+        isInitialized = true;
     }
 
-    private void OnValidate()
+    public void SetSpeed(float speed)
     {
-        AutoBind();
-    }
-
-    private void Awake()
-    {
-        AutoBind();
-    }
-
-    private void AutoBind()
-    {
-        if (references == null)
-            references = GetComponent<DigimonReferences>();
-
-        if (references == null)
-            references = GetComponentInParent<DigimonReferences>();
+        if (!isInitialized)
+            return;
+        animator.SetFloat(speedParam, speed);
     }
 
     public void PlaySkill(DigimonSkill skill)
     {
-        if (Animator == null)
+        if (!isInitialized)
             return;
 
         string trigger = defaultSkillTrigger;
@@ -56,45 +55,29 @@ public class DigimonAnimator : MonoBehaviour
         if (skill != null && !string.IsNullOrWhiteSpace(skill.animationTrigger))
             trigger = skill.animationTrigger;
 
-        if (string.IsNullOrWhiteSpace(trigger))
-            return;
-
-        Animator.SetTrigger(trigger);
+        animator.SetTrigger(trigger);
     }
 
     public void PlayDamage()
     {
-        if (Animator == null || string.IsNullOrWhiteSpace(damageTrigger))
+        if (!isInitialized)
             return;
-
-        Animator.SetTrigger(damageTrigger);
+        animator.SetTrigger(damageTrigger);
     }
 
     public void PlayDeath()
     {
-        if (Animator == null || string.IsNullOrWhiteSpace(deathTrigger))
+        if (!isInitialized)
             return;
-
-        Animator.SetTrigger(deathTrigger);
+        animator.SetTrigger(deathTrigger);
     }
 
-    public void AnimationEvent_SpawnEffect()
-    {
-        OnSpawnEffect?.Invoke();
-    }
+    public void AnimationEvent_SpawnEffect() => OnSpawnEffect?.Invoke();
 
-    public void AnimationEvent_SwitchEffectToMoveToTarget()
-    {
+    public void AnimationEvent_SwitchEffectToMoveToTarget() =>
         OnSwitchEffectToMoveToTarget?.Invoke();
-    }
 
-    public void AnimationEvent_ApplyHit()
-    {
-        OnApplyHit?.Invoke();
-    }
+    public void AnimationEvent_ApplyHit() => OnApplyHit?.Invoke();
 
-    public void AnimationEvent_FinishSkill()
-    {
-        OnFinishSkill?.Invoke();
-    }
+    public void AnimationEvent_FinishSkill() => OnFinishSkill?.Invoke();
 }

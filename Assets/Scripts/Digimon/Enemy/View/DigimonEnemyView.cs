@@ -2,42 +2,33 @@ using UnityEngine;
 
 public class DigimonEnemyView : MonoBehaviour
 {
-    [SerializeField]
-    private Transform modelRoot;
+    private DigimonAnimator animator;
 
-    private GameObject currentModel;
-    private Animator animator;
-
-    public void SpawnModel(DigimonData data)
+    public void Inject(DigimonAnimator animator)
     {
-        if (data == null || data.modelPrefab == null || modelRoot == null)
-            return;
+        this.animator = animator;
 
-        if (currentModel != null)
-            Destroy(currentModel);
-
-        currentModel = Instantiate(data.modelPrefab, modelRoot);
-        currentModel.transform.localPosition = Vector3.zero;
-        currentModel.transform.localRotation = Quaternion.identity;
-
-        var binder = currentModel.GetComponent<DigimonModelBinder>();
-
-        if (binder == null)
-        {
-            Debug.LogError("❌ ModelPrefab sem DigimonModelBinder", currentModel);
-            return;
-        }
-        animator = binder.Animator;
+        if (this.animator == null)
+            Debug.LogError("❌ DigimonEnemyView → Animator não injetado", this);
     }
 
-    public Animator GetAnimator()
+    public void PlayWalk()
     {
-        if (animator == null)
-        {
-            Debug.LogError("❌ Animator não inicializado. SpawnModel falhou.", this);
-            return null;
-        }
+        animator?.SetSpeed(1f);
+    }
 
-        return animator;
+    public void PlayIdle()
+    {
+        animator?.SetSpeed(0f);
+    }
+
+    public void PlayAttack()
+    {
+        animator?.PlaySkill(null);
+    }
+
+    public void PlayHit()
+    {
+        animator?.PlayDamage();
     }
 }

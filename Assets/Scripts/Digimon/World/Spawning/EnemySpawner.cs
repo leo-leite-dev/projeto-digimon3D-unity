@@ -1,31 +1,45 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.AI;
 
 public class EnemySpawner : MonoBehaviour
 {
-    public WanderArea wanderArea;
+    [Header("Dependencies")]
+    [SerializeField]
+    private WanderArea wanderArea;
+
+    [SerializeField]
+    private Transform player;
 
     [Header("Enemy Types")]
-    public List<DigimonData> enemyTypes;
+    [SerializeField]
+    private List<DigimonData> enemyTypes;
 
     [Header("Enemy Base Prefab")]
-    public GameObject enemyBasePrefab;
+    [SerializeField]
+    private GameObject enemyBasePrefab;
 
-    public int maxEnemies = 3;
-    public float respawnTime = 5f;
+    [Header("Spawn Settings")]
+    [SerializeField]
+    private int maxEnemies = 3;
+
+    [SerializeField]
+    private float respawnTime = 5f;
 
     public System.Action<DigimonEnemy> OnEnemySpawned;
 
-    private List<GameObject> aliveEnemies = new List<GameObject>();
+    private readonly List<GameObject> aliveEnemies = new();
 
     void Awake()
     {
-        wanderArea = GetComponent<WanderArea>();
+        if (wanderArea == null)
+            wanderArea = GetComponent<WanderArea>();
     }
 
     void Start()
     {
+        if (!ValidateSpawner())
+            return;
+
         SpawnInitialEnemies();
     }
 
@@ -39,52 +53,98 @@ public class EnemySpawner : MonoBehaviour
 
     void SpawnEnemy()
     {
-        if (enemyTypes == null || enemyTypes.Count == 0 || wanderArea == null)
+        if (!CanSpawn())
             return;
 
-        DigimonData data = enemyTypes[Random.Range(0, enemyTypes.Count)];
+        DigimonData data = GetRandomEnemyData();
 
-        Vector3 randomPos = wanderArea.GetRandomPosition();
-
-        if (!NavMesh.SamplePosition(randomPos, out NavMeshHit hit, 10f, NavMesh.AllAreas))
-            return;
-
-        GameObject enemyGO = DigimonFactory.Create(
-            enemyBasePrefab,
-            hit.position,
-            Quaternion.identity
-        );
-
-        if (enemyGO == null)
-            return;
-
-        var digimon = enemyGO.GetComponent<Digimon>();
-        if (digimon != null)
-            digimon.Setup(data);
-        else
+        if (!SpawnPositionResolver.TryGetValidPosition(wanderArea, out Vector3 position))
         {
+            Debug.LogWarning("⚠️ Não encontrou posição válida para spawn", this);
             return;
         }
 
-        var view = enemyGO.GetComponent<DigimonEnemyView>();
-        if (view != null)
-            view.SpawnModel(data);
-        else
+        GameObject enemyGO = DigimonFactory.Create(enemyBasePrefab, data, position);
+
+        if (enemyGO == null)
+        {
+            Debug.LogError("❌ Falha ao criar enemyGO", this);
             return;
+        }
+        var references = enemyGO.GetComponent<DigimonReferences>();
 
-        DigimonComposer.Compose(enemyGO);
+        if (references == null)
+        {
+            Debug.LogError("❌ DigimonReferences não encontrado", enemyGO);
+            Destroy(enemyGO);
+            return;
+        }
 
-        var wander = enemyGO.GetComponent<EnemyWander>();
-        if (wander != null)
-            wander.Initialize(new WanderContext(wanderArea, this));
-        else
-            Debug.LogWarning("⚠️ Enemy sem EnemyWander", enemyGO);
+        DigimonEnemyComposer.Compose(enemyGO);
+
+        if (!references.HasCoreReferences())
+        {
+            Debug.LogError("❌ Enemy inválido após composição", enemyGO);
+            Destroy(enemyGO);
+            return;
+        }
+
+        EnemyInitializer.Initialize(enemyGO, wanderArea, player);
 
         aliveEnemies.Add(enemyGO);
 
         var enemy = enemyGO.GetComponent<DigimonEnemy>();
         if (enemy != null)
+        {
             OnEnemySpawned?.Invoke(enemy);
+        }
+
+        Debug.Log("✅ Enemy spawnado com sucesso", enemyGO);
+    }
+
+    bool CanSpawn()
+    {
+        if (enemyTypes == null || enemyTypes.Count == 0)
+        {
+            Debug.LogWarning("⚠️ enemyTypes vazio", this);
+            return false;
+        }
+
+        if (wanderArea == null)
+        {
+            Debug.LogError("❌ WanderArea não definido", this);
+            return false;
+        }
+
+        if (enemyBasePrefab == null)
+        {
+            Debug.LogError("❌ enemyBasePrefab não definido", this);
+            return false;
+        }
+
+        return true;
+    }
+
+    bool ValidateSpawner()
+    {
+        if (player == null)
+        {
+            Debug.LogError("❌ Player não atribuído no EnemySpawner", this);
+            return false;
+        }
+
+        if (wanderArea == null)
+        {
+            Debug.LogError("❌ WanderArea não atribuído", this);
+            return false;
+        }
+
+        return true;
+    }
+
+    DigimonData GetRandomEnemyData()
+    {
+        return enemyTypes[Random.Range(0, enemyTypes.Count)];
     }
 
     public void NotifyEnemyDeath(GameObject enemy)

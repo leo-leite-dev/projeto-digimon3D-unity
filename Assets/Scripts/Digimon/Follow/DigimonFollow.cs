@@ -2,78 +2,45 @@ using UnityEngine;
 
 public class DigimonFollow : Digimon
 {
-    [Header("References")]
-    public Transform player;
-    public Transform followPoint;
+    [Header("External Dependencies (injeção explícita)")]
+    private Transform player;
+    private Transform followPoint;
 
-    [SerializeField]
     private DigimonMovement movement;
-
-    [SerializeField]
     private DigimonAttack attack;
-
-    [SerializeField]
-    private Animator animator;
-
-    [SerializeField]
-    private Transform modelRoot;
+    private DigimonAnimator digimonAnimator;
+    private DigimonFollowController combat;
 
     [Header("Follow")]
     [SerializeField]
     private float repathDistance = 0.25f;
 
-    private GameObject currentModel;
     private Vector3 lastFollowPosition;
 
-    private DigimonSkill pendingSkill;
-    private GameObject requestedSkillTarget;
-    private bool isTryingToUseSkill;
-
-    protected override void Validate()
+    public override void Setup(DigimonData digimonData)
     {
-        base.Validate();
-
-        if (movement == null)
-            movement = GetComponent<DigimonMovement>();
-
-        if (attack == null)
-            attack = GetComponent<DigimonAttack>();
-
-        if (animator == null)
-            animator = GetComponentInChildren<Animator>(true);
-
-        if (modelRoot == null)
-        {
-            Transform root = transform.Find("ModelRoot");
-
-            if (root != null)
-                modelRoot = root;
-            else
-                Debug.LogError(
-                    $"{nameof(DigimonFollow)}: ModelRoot não encontrado no prefab.",
-                    this
-                );
-        }
+        base.Setup(digimonData);
     }
 
-    protected override void Awake()
+    public void Inject(DigimonReferences references, DigimonFollowController combatController)
     {
-        base.Awake();
+        if (references == null)
+        {
+            Debug.LogError("❌ DigimonReferences não pode ser nulo", this);
+            return;
+        }
 
-        if (movement == null)
-            movement = GetComponent<DigimonMovement>();
+        if (combatController == null)
+        {
+            Debug.LogError("❌ CombatController NÃO foi injetado no Follow", this);
+            return;
+        }
 
-        if (attack == null)
-            attack = GetComponent<DigimonAttack>();
+        movement = references.Movement;
+        attack = references.Attack;
+        digimonAnimator = references.DigimonAnimator;
 
-        if (animator == null)
-            animator = GetComponentInChildren<Animator>(true);
-
-        if (movement == null)
-            Debug.LogError($"{nameof(DigimonFollow)}: DigimonMovement não encontrado.", this);
-
-        if (attack == null)
-            Debug.LogError($"{nameof(DigimonFollow)}: DigimonAttack não encontrado.", this);
+        combat = combatController;
     }
 
     public void Initialize(Transform playerRef, Transform followPointRef)
@@ -93,129 +60,14 @@ public class DigimonFollow : Digimon
         if (player == null || followPoint == null)
             return;
 
-        if (isTryingToUseSkill)
-            HandlePendingSkill();
+        var decision = combat != null ? combat.Tick() : CombatDecision.None;
+
+        if (decision.Action != CombatAction.None)
+            ExecuteCombatDecision(decision);
         else
             FollowPlayer();
 
         UpdateAnimation();
-    }
-
-    public void RequestSkillUse(DigimonSkill skill, GameObject target)
-    {
-        if (skill == null || target == null)
-            return;
-
-        pendingSkill = skill;
-        requestedSkillTarget = target;
-        isTryingToUseSkill = true;
-    }
-
-    private void HandlePendingSkill()
-    {
-        if (pendingSkill == null || requestedSkillTarget == null)
-        {
-            Debug.Log("[DigimonFollow] Pending skill ou target está null. Limpando requisição.");
-            ClearPendingSkill();
-            return;
-        }
-
-        if (attack == null || movement == null)
-        {
-            Debug.Log("[DigimonFollow] Attack ou Movement está null. Limpando requisição.");
-            ClearPendingSkill();
-            return;
-        }
-
-        if (!IsPendingTargetStillValid())
-        {
-            Debug.Log("[DigimonFollow] Target pendente não é mais válido. Limpando requisição.");
-            ClearPendingSkill();
-            return;
-        }
-
-        float distance = Vector3.Distance(
-            transform.position,
-            requestedSkillTarget.transform.position
-        );
-
-        SkillUseCheckResult result = attack.EvaluateSkillUse(pendingSkill, requestedSkillTarget);
-
-        Debug.Log(
-            $"[DigimonFollow] Skill={pendingSkill.skillName} | "
-                + $"Target={requestedSkillTarget.name} | "
-                + $"Dist={distance:F2} | "
-                + $"Range={pendingSkill.range:F2} | "
-                + $"Result={result}"
-        );
-
-        switch (result)
-        {
-            case SkillUseCheckResult.Success:
-                Debug.Log(
-                    "[DigimonFollow] Dentro do range. Parando movimento e tentando usar skill."
-                );
-                movement.StopMovement();
-                attack.TryUseSkill(pendingSkill, requestedSkillTarget);
-                ClearPendingSkill();
-                break;
-
-            case SkillUseCheckResult.OutOfRange:
-                Debug.Log("[DigimonFollow] Fora do range. Movendo até a distância da skill.");
-                movement.MoveToSkillRange(requestedSkillTarget.transform, pendingSkill.range);
-                break;
-
-            case SkillUseCheckResult.OnCooldown:
-                Debug.Log("[DigimonFollow] Skill em cooldown. Parando movimento.");
-                movement.StopMovement();
-                break;
-
-            case SkillUseCheckResult.AlreadyCasting:
-                Debug.Log("[DigimonFollow] Digimon já está castando. Parando movimento.");
-                movement.StopMovement();
-                break;
-
-            case SkillUseCheckResult.InvalidSkill:
-                Debug.Log("[DigimonFollow] Skill inválida. Limpando requisição.");
-                ClearPendingSkill();
-                break;
-
-            case SkillUseCheckResult.InvalidTarget:
-                Debug.Log("[DigimonFollow] Target inválido. Limpando requisição.");
-                ClearPendingSkill();
-                break;
-
-            case SkillUseCheckResult.MissingDigimonData:
-                Debug.Log("[DigimonFollow] Digimon sem data. Limpando requisição.");
-                ClearPendingSkill();
-                break;
-
-            default:
-                Debug.Log("[DigimonFollow] Resultado inesperado. Limpando requisição.");
-                ClearPendingSkill();
-                break;
-        }
-    }
-
-    private bool IsPendingTargetStillValid()
-    {
-        if (requestedSkillTarget == null)
-            return false;
-
-        if (!requestedSkillTarget.activeInHierarchy)
-            return false;
-
-        return true;
-    }
-
-    private void ClearPendingSkill()
-    {
-        pendingSkill = null;
-        requestedSkillTarget = null;
-        isTryingToUseSkill = false;
-
-        if (followPoint != null)
-            lastFollowPosition = followPoint.position;
     }
 
     private void FollowPlayer()
@@ -233,88 +85,50 @@ public class DigimonFollow : Digimon
         }
     }
 
-    public void SpawnModel(GameObject prefab)
+    private void ExecuteCombatDecision(CombatDecision decision)
     {
-        if (prefab == null)
+        if (movement == null)
         {
-            Debug.LogError($"{nameof(DigimonFollow)}: prefab do modelo é null.", this);
+            Debug.LogError("❌ Movement NULL no Follow");
             return;
         }
 
-        if (modelRoot == null)
+        if (attack == null)
         {
-            Debug.LogError($"{nameof(DigimonFollow)}: ModelRoot não definido.", this);
+            Debug.LogError("❌ Attack NULL no Follow");
             return;
         }
-
-        if (currentModel != null)
-            Destroy(currentModel);
-
-        // 🔹 Instancia modelo
-        currentModel = Instantiate(prefab, modelRoot);
-        currentModel.transform.localPosition = Vector3.zero;
-        currentModel.transform.localRotation = Quaternion.identity;
-
-        // 🔹 Pega Animator do modelo
-        animator = currentModel.GetComponentInChildren<Animator>(true);
-
-        if (animator == null)
+        switch (decision.Action)
         {
-            Debug.LogWarning($"{nameof(DigimonFollow)}: Animator não encontrado no modelo.", this);
-        }
+            case CombatAction.MoveToTarget:
+                if (decision.Target != null)
+                    movement.MoveToSkillRange(decision.Target, decision.Range);
+                break;
 
-        // 🔥 PROXY PARA ANIMATION EVENTS (SEM SUJAR PREFAB)
-        var proxy = currentModel.GetComponent<DigimonAnimationEventProxy>();
+            case CombatAction.Stop:
+                movement.StopMovement();
+                break;
 
-        if (proxy == null)
-        {
-            proxy = currentModel.AddComponent<DigimonAnimationEventProxy>();
-            Debug.Log("[DigimonFollow] Proxy de AnimationEvent adicionado ao modelo.");
-        }
+            case CombatAction.UseSkill:
+                movement.StopMovement();
 
-        // 🔹 Pega DigimonAnimator do ROOT (lógica continua centralizada)
-        var rootAnimator = GetComponent<DigimonAnimator>();
+                if (decision.Skill != null && decision.SkillTarget != null)
+                    attack.TryUseSkill(decision.Skill, decision.SkillTarget);
 
-        if (rootAnimator == null)
-        {
-            Debug.LogError("[DigimonFollow] DigimonAnimator não encontrado no root.", this);
-        }
-        else
-        {
-            proxy.Initialize(rootAnimator);
-        }
-
-        // 🔹 Atualiza referências visuais
-        var references = GetComponent<DigimonReferences>();
-
-        // 🔥 RECOMPÕE SISTEMA (agora com proxy + animator corretos)
-        var attackSceneBinder = GetComponent<DigimonAttackSceneBinder>();
-
-        if (attackSceneBinder == null)
-            attackSceneBinder = GetComponentInParent<DigimonAttackSceneBinder>();
-
-        if (attackSceneBinder == null)
-            attackSceneBinder = GetComponentInChildren<DigimonAttackSceneBinder>(true);
-
-        if (attackSceneBinder != null)
-        {
-            attackSceneBinder.ComposeIfValid();
-            Debug.Log("[DigimonFollow] DigimonAttackSceneBinder recomposto após SpawnModel.", this);
-        }
-        else
-        {
-            Debug.LogError(
-                "[DigimonFollow] DigimonAttackSceneBinder não encontrado após SpawnModel.",
-                this
-            );
+                break;
         }
     }
 
     private void UpdateAnimation()
     {
-        if (animator == null || movement == null)
+        if (digimonAnimator == null || movement == null)
             return;
 
-        animator.SetFloat("Speed", movement.Velocity.magnitude);
+        digimonAnimator.SetSpeed(movement.Velocity.magnitude);
+    }
+
+    public void RequestSkill(DigimonSkill skill, GameObject target)
+    {
+        combat?.RequestSkill(skill, target);
     }
 }

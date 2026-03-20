@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.AI;
 
 public class PlayerDigidex : ValidatedMonoBehaviour
 {
@@ -19,14 +18,16 @@ public class PlayerDigidex : ValidatedMonoBehaviour
     [SerializeField]
     private Transform followPoint;
 
+    [Header("Dependencies")]
     [SerializeField]
     private PlayerCombatController combatController;
 
     [SerializeField]
     private GameObject digimonFollowerPrefab;
 
+    private DigimonSpawnService spawnService;
+
     private GameObject currentDigimonObject;
-    private DigimonFollow currentDigimonFollow;
 
     protected override void Validate()
     {
@@ -42,18 +43,11 @@ public class PlayerDigidex : ValidatedMonoBehaviour
 
         if (digimonFollowerPrefab == null)
         {
-            digimonFollowerPrefab = Resources.Load<GameObject>(
-                "Prefabs/EntityContainer/DigimonFollow"
-            );
-
-            if (digimonFollowerPrefab == null)
-            {
-                Debug.LogError(
-                    $"{nameof(PlayerDigidex)}: DigimonFollow prefab não encontrado em Resources/Prefabs/EntityContainer/DigimonFollow.",
-                    this
-                );
-            }
+            Debug.LogError($"{nameof(PlayerDigidex)}: Prefab não configurado.", this);
+            return;
         }
+
+        spawnService = new DigimonSpawnService(digimonFollowerPrefab);
     }
 
     private void Start()
@@ -80,19 +74,25 @@ public class PlayerDigidex : ValidatedMonoBehaviour
 
         if (spawnPoint == null)
         {
-            Debug.LogError($"{nameof(PlayerDigidex)}: SpawnPoint não encontrado no Player.", this);
+            Debug.LogError($"{nameof(PlayerDigidex)}: SpawnPoint não encontrado.", this);
             valid = false;
         }
 
         if (followPoint == null)
         {
-            Debug.LogError($"{nameof(PlayerDigidex)}: FollowPoint não encontrado no Player.", this);
+            Debug.LogError($"{nameof(PlayerDigidex)}: FollowPoint não encontrado.", this);
             valid = false;
         }
 
-        if (digimonFollowerPrefab == null)
+        if (spawnService == null)
         {
-            Debug.LogError($"{nameof(PlayerDigidex)}: Digimon follower prefab não definido.", this);
+            Debug.LogError($"{nameof(PlayerDigidex)}: SpawnService não criado.", this);
+            valid = false;
+        }
+
+        if (combatController == null)
+        {
+            Debug.LogError($"{nameof(PlayerDigidex)}: CombatController não definido.", this);
             valid = false;
         }
 
@@ -110,10 +110,7 @@ public class PlayerDigidex : ValidatedMonoBehaviour
 
     public void EquipDigimon(DigimonData data)
     {
-        if (data == null)
-            return;
-
-        if (!digidex.Contains(data))
+        if (data == null || !digidex.Contains(data))
             return;
 
         equippedDigimon = data;
@@ -122,52 +119,25 @@ public class PlayerDigidex : ValidatedMonoBehaviour
 
     private void SpawnEquippedDigimon()
     {
-        if (!ValidateSetup())
+        if (!ValidateSetup() || equippedDigimon == null)
             return;
-
-        if (equippedDigimon == null)
-            return;
-
-        if (equippedDigimon.modelPrefab == null)
-        {
-            Debug.LogError($"{nameof(PlayerDigidex)}: DigimonData sem modelPrefab.", this);
-            return;
-        }
 
         DespawnCurrentDigimon();
 
-        Vector3 spawnPosition = NavMeshUtility.GetValidPosition(spawnPoint.position);
-
-        currentDigimonObject = Instantiate(
-            digimonFollowerPrefab,
-            spawnPosition,
-            spawnPoint.rotation
+        var follow = spawnService.SpawnFollow(
+            equippedDigimon,
+            spawnPoint.position,
+            spawnPoint.rotation,
+            transform,
+            followPoint
         );
-        currentDigimonObject.name = equippedDigimon.digimonName;
 
-        NavMeshAgent agent = currentDigimonObject.GetComponent<NavMeshAgent>();
-        NavMeshUtility.WarpAgentToValidPosition(agent, spawnPosition);
-
-        currentDigimonFollow = currentDigimonObject.GetComponent<DigimonFollow>();
-
-        if (currentDigimonFollow == null)
-        {
-            Debug.LogError(
-                $"{nameof(PlayerDigidex)}: O prefab instanciado não possui DigimonFollow.",
-                currentDigimonObject
-            );
+        if (follow == null)
             return;
-        }
 
-        currentDigimonFollow.Setup(equippedDigimon);
-        currentDigimonFollow.Initialize(transform, followPoint);
-        currentDigimonFollow.SpawnModel(equippedDigimon.modelPrefab);
+        currentDigimonObject = follow.gameObject;
 
-        DigimonReferences references = currentDigimonObject.GetComponent<DigimonReferences>();
-        if (references != null)
-            references.RefreshVisualReferences();
-
-        RegisterCombatDigimon(currentDigimonFollow);
+        RegisterCombatDigimon(follow);
     }
 
     private void DespawnCurrentDigimon()
@@ -176,14 +146,10 @@ public class PlayerDigidex : ValidatedMonoBehaviour
             Destroy(currentDigimonObject);
 
         currentDigimonObject = null;
-        currentDigimonFollow = null;
     }
 
     private void RegisterCombatDigimon(DigimonFollow digimonFollow)
     {
-        if (combatController == null)
-            return;
-
         combatController.SetDigimon(digimonFollow);
     }
 }

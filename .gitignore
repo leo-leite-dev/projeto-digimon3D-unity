@@ -20,6 +20,7 @@ UserSettings/
 *.opendb
 *.VC.db
 
+Assets/Dowloads
 Assets/Player
 Assets/Digimons/
 Assets/Models/Digimons/

@@ -4,26 +4,24 @@ using UnityEngine;
 [RequireComponent(typeof(EnemyWander))]
 public class DigimonEnemy : Digimon
 {
-    [Header("Target")]
-    [SerializeField]
     private Transform targetPoint;
 
     public Transform TargetPoint => targetPoint;
 
-    protected override void Awake()
+    public void InjectTarget(Transform targetPoint)
     {
-        base.Awake();
-        ResolveTargetPoint();
-    }
-
-    private void ResolveTargetPoint()
-    {
-        if (targetPoint != null)
+        if (targetPoint == null)
+        {
+            Debug.LogError("❌ DigimonEnemy → TargetPoint null", this);
             return;
+        }
 
-        Transform found = transform.Find("Target");
+        if (this.targetPoint != null)
+        {
+            Debug.LogWarning("⚠️ Target já foi definido", this);
+            return;
+        }
 
-        if (found != null)
-            targetPoint = found;
+        this.targetPoint = targetPoint;
     }
 }

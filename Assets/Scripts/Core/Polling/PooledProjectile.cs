@@ -2,20 +2,24 @@ using UnityEngine;
 
 public class PooledProjectile : MonoBehaviour
 {
-    public ProjectilePool pool;
-
+    private ProjectilePool pool;
     private GameObject prefab;
 
-    public void SetPrefab(GameObject prefabRef)
+    public void Setup(ProjectilePool pool, GameObject prefab)
     {
-        prefab = prefabRef;
+        this.pool = pool;
+        this.prefab = prefab;
     }
 
     public void ReturnToPool()
     {
-        if (pool != null && prefab != null)
-            pool.Return(prefab, gameObject);
-        else
+        if (pool == null || prefab == null)
+        {
+            Debug.LogWarning("⚠️ PooledProjectile não configurado corretamente", this);
             Destroy(gameObject);
+            return;
+        }
+
+        pool.Return(prefab, gameObject);
     }
 }

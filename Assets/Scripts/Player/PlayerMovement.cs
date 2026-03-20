@@ -38,12 +38,24 @@ public class PlayerMovement : ValidatedMonoBehaviour
     private Vector3 currentVelocity;
     private float verticalVelocity;
 
-    private readonly Queue<Vector3> positionHistory = new Queue<Vector3>();
+    private readonly Queue<Vector3> positionHistory = new();
 
     public bool IsMoving => currentVelocity.sqrMagnitude > 0.01f;
     public Vector3[] PositionHistory => positionHistory.ToArray();
 
     private RaycastHit groundHit;
+
+    public void Setup(PlayerControls input, Transform cameraTransform)
+    {
+        this.input = input;
+        this.cameraTransform = cameraTransform;
+
+        if (this.input == null)
+            Debug.LogError("[PlayerMovement] Input inválido no Setup.", this);
+
+        if (this.cameraTransform == null)
+            Debug.LogError("[PlayerMovement] Camera Transform inválido no Setup.", this);
+    }
 
     protected override void Awake()
     {
@@ -51,36 +63,21 @@ public class PlayerMovement : ValidatedMonoBehaviour
 
         controller = GetComponent<CharacterController>();
 
-        input = new PlayerControls();
-
         if (animator == null)
             animator = GetComponentInChildren<Animator>();
-
-        if (cameraTransform == null && Camera.main != null)
-            cameraTransform = Camera.main.transform;
     }
 
     protected override void Validate()
     {
-        if (cameraTransform == null)
-            Debug.LogError("[PlayerMovement] Camera Transform not assigned.", this);
-
         if (animator == null)
-            Debug.LogWarning("[PlayerMovement] Animator not assigned.", this);
-    }
-
-    void OnEnable()
-    {
-        input.Enable();
-    }
-
-    void OnDisable()
-    {
-        input.Disable();
+            Debug.LogError("[PlayerMovement] Animator não encontrado.", this);
     }
 
     void Update()
     {
+        if (input == null || cameraTransform == null)
+            return;
+
         ReadInput();
         HandleMovement();
         HandleRotation();
@@ -95,22 +92,16 @@ public class PlayerMovement : ValidatedMonoBehaviour
         float horizontal = inputVector.x;
         float vertical = inputVector.y;
 
-        if (cameraTransform == null)
-        {
-            moveDirection = Vector3.zero;
-            return;
-        }
+        Vector3 cameraForward = cameraTransform.forward;
+        Vector3 cameraRight = cameraTransform.right;
 
-        Vector3 forward = cameraTransform.forward;
-        Vector3 right = cameraTransform.right;
+        cameraForward.y = 0f;
+        cameraRight.y = 0f;
 
-        forward.y = 0f;
-        right.y = 0f;
+        cameraForward.Normalize();
+        cameraRight.Normalize();
 
-        forward.Normalize();
-        right.Normalize();
-
-        moveDirection = forward * vertical + right * horizontal;
+        moveDirection = cameraForward * vertical + cameraRight * horizontal;
 
         if (moveDirection.sqrMagnitude > 1f)
             moveDirection.Normalize();
@@ -129,22 +120,11 @@ public class PlayerMovement : ValidatedMonoBehaviour
 
         Vector3 targetVelocity = slopeDirection * speed;
 
-        if (moveDirection.sqrMagnitude > 0.01f)
-        {
-            currentVelocity = Vector3.MoveTowards(
-                currentVelocity,
-                targetVelocity,
-                acceleration * Time.deltaTime
-            );
-        }
-        else
-        {
-            currentVelocity = Vector3.MoveTowards(
-                currentVelocity,
-                Vector3.zero,
-                deceleration * Time.deltaTime
-            );
-        }
+        currentVelocity = Vector3.MoveTowards(
+            currentVelocity,
+            moveDirection.sqrMagnitude > 0.01f ? targetVelocity : Vector3.zero,
+            (moveDirection.sqrMagnitude > 0.01f ? acceleration : deceleration) * Time.deltaTime
+        );
 
         Vector3 velocity = currentVelocity;
         velocity.y = verticalVelocity;
@@ -155,7 +135,7 @@ public class PlayerMovement : ValidatedMonoBehaviour
     void ApplyGravity()
     {
         if (controller.isGrounded && verticalVelocity < 0f)
-            verticalVelocity = -5f;
+            verticalVelocity = -2f;
 
         verticalVelocity += gravity * Time.deltaTime;
     }

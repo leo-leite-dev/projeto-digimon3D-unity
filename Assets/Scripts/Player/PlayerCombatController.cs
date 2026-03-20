@@ -15,23 +15,58 @@ public class PlayerCombatController : ValidatedMonoBehaviour
             targetSystem = GetComponent<TargetSystem>();
     }
 
+    // public void UseSkill(DigimonSkill skill)
+    // {
+    //     if (skill == null)
+    //         return;
+
+    //     if (currentDigimon == null)
+    //         return;
+
+    //     if (targetSystem == null)
+    //         return;
+
+    //     GameObject target = targetSystem.GetCurrentTarget();
+
+    //     if (target == null)
+    //         return;
+
+    //     currentDigimon.RequestSkill(skill, target);
+    // }
+
     public void UseSkill(DigimonSkill skill)
     {
+        Debug.Log("🟡 [FLOW] Combat.UseSkill chamado");
+
         if (skill == null)
+        {
+            Debug.Log("❌ Skill null");
             return;
+        }
 
         if (currentDigimon == null)
+        {
+            Debug.Log("❌ currentDigimon null");
             return;
+        }
 
         if (targetSystem == null)
+        {
+            Debug.Log("❌ targetSystem null");
             return;
+        }
 
         GameObject target = targetSystem.GetCurrentTarget();
 
         if (target == null)
+        {
+            Debug.Log("❌ TARGET NULL (SEM ALVO)");
             return;
+        }
 
-        currentDigimon.RequestSkillUse(skill, target);
+        Debug.Log($"🟢 Target válido: {target.name}");
+
+        currentDigimon.RequestSkill(skill, target);
     }
 
     public void SetDigimon(DigimonFollow digimon)

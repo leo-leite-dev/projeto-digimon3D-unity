@@ -20,6 +20,8 @@ public class Digimon : ValidatedMonoBehaviour
 
     public int Level => level != null ? level.Level : 1;
 
+    public bool IsInitialized => data != null;
+
     protected override void Awake()
     {
         base.Awake();
@@ -27,11 +29,19 @@ public class Digimon : ValidatedMonoBehaviour
 
     public virtual void Setup(DigimonData digimonData)
     {
+        if (digimonData == null)
+        {
+            Debug.LogError($"❌ Setup falhou: DigimonData nulo em {gameObject.name}", this);
+            return;
+        }
+
         data = digimonData;
 
-        if (data == null)
-            return;
+        InitializeStats();
+    }
 
+    private void InitializeStats()
+    {
         stats ??= new DigimonStats();
         level ??= new DigimonLevel();
 
@@ -42,7 +52,7 @@ public class Digimon : ValidatedMonoBehaviour
 
     public void AddExperience(int amount)
     {
-        if (level == null)
+        if (!IsInitialized || level == null)
             return;
 
         level.Experience += amount;
@@ -51,13 +61,14 @@ public class Digimon : ValidatedMonoBehaviour
         {
             level.Experience -= level.ExpToNextLevel;
             level.Level++;
+
             ApplyLevelGrowth();
         }
     }
 
-    public void ApplyLevelGrowth()
+    private void ApplyLevelGrowth()
     {
-        if (data == null || level == null || stats == null)
+        if (!IsInitialized || stats == null || level == null)
             return;
 
         RecalculateStats();
@@ -69,9 +80,9 @@ public class Digimon : ValidatedMonoBehaviour
         );
     }
 
-    DigimonAttributes CalculateAttributesForLevel()
+    private DigimonAttributes CalculateAttributesForLevel()
     {
-        DigimonAttributes result = new DigimonAttributes
+        var result = new DigimonAttributes
         {
             Strength = data.attributes.Strength,
             Intelligence = data.attributes.Intelligence,
@@ -94,10 +105,11 @@ public class Digimon : ValidatedMonoBehaviour
 
     protected void RecalculateStats()
     {
-        if (data == null || stats == null || level == null)
+        if (!IsInitialized || stats == null || level == null)
             return;
 
         attributes = CalculateAttributesForLevel();
+
         DigimonStatsCalculator.CalculateStats(attributes, stats);
     }
 
@@ -106,17 +118,15 @@ public class Digimon : ValidatedMonoBehaviour
     {
         if (data == null)
         {
-            Debug.LogError($"ReloadFromData falhou: data nulo em {gameObject.name}", this);
+            Debug.LogError($"❌ ReloadFromData falhou: data nulo em {gameObject.name}", this);
             return;
         }
 
-        if (level == null)
-            level = new DigimonLevel();
-
-        if (stats == null)
-            stats = new DigimonStats();
+        level ??= new DigimonLevel();
+        stats ??= new DigimonStats();
 
         level.Level = data.startLevel;
+
         RecalculateStats();
     }
 }

@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.AI;
 
-public class DigimonReferences : ValidatedMonoBehaviour
+public class DigimonReferences : MonoBehaviour
 {
     [Header("Core")]
     [SerializeField]
@@ -18,16 +18,16 @@ public class DigimonReferences : ValidatedMonoBehaviour
 
     [Header("Visual")]
     [SerializeField]
-    private Animator animator;
-
-    [SerializeField]
     private Transform modelRoot;
 
     [SerializeField]
-    private DigimonAnimator digimonAnimator;
+    private Animator animator;
 
     [SerializeField]
     private Transform firePoint;
+
+    [SerializeField]
+    private DigimonAnimator digimonAnimator;
 
     [Header("Navigation")]
     [SerializeField]
@@ -40,53 +40,26 @@ public class DigimonReferences : ValidatedMonoBehaviour
     [SerializeField]
     private DigimonHitReceiver hitReceiver;
 
+    [Header("Services")]
+    [SerializeField]
+    private ProjectilePool projectilePool;
+
     public Digimon Digimon => digimon;
     public DigimonMovement Movement => movement;
     public DigimonAttack Attack => attack;
     public DigimonFollow Follow => follow;
 
-    public Animator Animator => animator;
     public Transform ModelRoot => modelRoot;
-    public DigimonAnimator DigimonAnimator => digimonAnimator;
+    public Animator Animator => animator;
     public Transform FirePoint => firePoint;
+    public DigimonAnimator DigimonAnimator => digimonAnimator;
 
     public NavMeshAgent NavMeshAgent => navMeshAgent;
 
     public SkillDamageResolver DamageResolver => damageResolver;
     public DigimonHitReceiver HitReceiver => hitReceiver;
 
-    protected override void Awake()
-    {
-        base.Awake();
-        RefreshCoreReferences();
-    }
-
-    protected override void Validate()
-    {
-        RefreshCoreReferences();
-    }
-
-    [ContextMenu("Refresh Core References")]
-    public void RefreshCoreReferences()
-    {
-        DigimonCoreReferencesResolver.Refresh(this);
-    }
-
-    [ContextMenu("Refresh Visual References")]
-    public void RefreshVisualReferences()
-    {
-        DigimonVisualReferencesResolver.Refresh(this);
-
-        if (animator == null && modelRoot != null)
-            animator = modelRoot.GetComponentInChildren<Animator>(true);
-
-        if (firePoint == null && modelRoot != null)
-        {
-            var marker = modelRoot.GetComponentInChildren<FirePoint>(true);
-            if (marker != null)
-                firePoint = marker.transform;
-        }
-    }
+    public ProjectilePool ProjectilePool => projectilePool;
 
     public void SetCoreReferences(
         Digimon digimon,
@@ -109,17 +82,28 @@ public class DigimonReferences : ValidatedMonoBehaviour
         this.hitReceiver = hitReceiver;
     }
 
-    public void SetVisualInternal(Transform modelRoot, Animator animator)
+    public void SetVisualReferences(
+        Transform modelRoot,
+        Animator animator,
+        Transform firePoint,
+        DigimonAnimator digimonAnimator
+    )
     {
         this.modelRoot = modelRoot;
         this.animator = animator;
+        this.firePoint = firePoint;
+        this.digimonAnimator = digimonAnimator;
     }
 
-    public void InitializeAfterModelSpawn(Transform modelRoot, Animator animator)
+    public void BindRuntime(GameObject modelInstance)
     {
-        SetVisualInternal(modelRoot, animator);
+        animator = modelInstance.GetComponentInChildren<Animator>();
+        firePoint = modelInstance.transform.Find("FirePoint");
+    }
 
-        RefreshVisualReferences();
+    public bool HasCoreReferences()
+    {
+        return digimon != null && movement != null && navMeshAgent != null;
     }
 
     public bool HasVisualReferences()
