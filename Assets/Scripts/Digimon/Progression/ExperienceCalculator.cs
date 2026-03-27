@@ -11,7 +11,7 @@ public static class ExperienceCalculator
 
     public static int CalculateExpGain(Digimon attacker, Digimon enemy)
     {
-        int baseExp = enemy.Data.baseExpReward;
+        int baseExp = enemy.BaseExpReward;
 
         int diff = enemy.Level - attacker.Level;
 
